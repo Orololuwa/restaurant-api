@@ -1,5 +1,8 @@
-import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { Serialize } from 'src/interceptors/serialize.inteceptor';
+import { CurrentUser } from 'src/users/decorators/current-user.decorators';
+import { CreateUserDTO } from 'src/users/dtos/dto';
 import { CreateOrderDTO } from './dto/create-order.dto';
 import { OrderDTO } from './dto/order.dto';
 import { OrdersService } from './orders.service';
@@ -22,8 +25,9 @@ export class OrdersController {
   }
 
   @Get()
-  getAllOrders() {
-    return this.ordersService.find();
+  @UseGuards(AuthGuard)
+  getAllOrders(@CurrentUser() user: CreateUserDTO) {
+    return this.ordersService.find(user);
   }
 
   @Delete()

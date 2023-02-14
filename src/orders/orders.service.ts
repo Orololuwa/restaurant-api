@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderedIngredientsService } from 'src/ordered-ingredients/ordered-ingredients.service';
+import { CreateUserDTO } from 'src/users/dtos/dto';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { CreateOrderDTO } from './dto/create-order.dto';
@@ -42,8 +43,9 @@ export class OrdersService {
     return this.repo.save(order);
   }
 
-  find() {
+  find(user: CreateUserDTO) {
     return this.repo.find({
+      where: { user },
       relations: {
         ingredients: true,
         user: true,
