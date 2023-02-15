@@ -44,13 +44,26 @@ export class OrdersService {
   }
 
   find(user: CreateUserDTO) {
-    return this.repo.find({
-      where: { user },
-      relations: {
-        ingredients: true,
-        user: true,
-      },
-    });
+    return this.repo
+      .createQueryBuilder('orders')
+      .leftJoinAndSelect('orders.user', 'user')
+      .select([
+        'orders.id',
+        'orders.price',
+        'orders.deliveryMethod',
+        'user.id',
+        'user.name',
+        'user.email',
+      ])
+      .leftJoinAndSelect('orders.ingredients', 'ingredients')
+      .getMany();
+    // find({
+    //   where: { user },
+    //   relations: {
+    //     ingredients: true,
+    //     user: true,
+    //   },
+    // });
   }
 
   findOne(id: number) {
