@@ -21,7 +21,7 @@ export class IngredientsService {
   }
 
   findOne(id: number) {
-    return this.repo.findOne(id);
+    return this.repo.findOneBy({ id });
   }
 
   async update(id: number, body: Partial<Ingredient>) {
