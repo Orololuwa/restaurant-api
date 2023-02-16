@@ -24,7 +24,7 @@ export class UsersService {
 
   findOne(id: number) {
     if (!id) return null;
-    return this.repo.findOneBy({ id });
+    return this.repo.findOne(id);
   }
 
   async remove(id: number) {

@@ -68,7 +68,7 @@ export class OrdersService {
 
   findOne(id: number) {
     if (!id) return;
-    return this.repo.findOneBy({ id });
+    return this.repo.findOne(id);
   }
 
   async delete(id: number) {
