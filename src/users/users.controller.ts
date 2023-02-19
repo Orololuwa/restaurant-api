@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Serialize } from 'src/interceptors/serialize.inteceptor';
+import { Serialize } from 'src/core/interceptors/serialize.inteceptor';
 import { CreateUserDTO, SignInDTO } from './dtos/dto';
 import { UsersService } from '../services/users.service';
 import { UserDTO } from 'src/users/dtos/dto';
