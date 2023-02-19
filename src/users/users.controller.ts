@@ -12,9 +12,9 @@ import {
 } from '@nestjs/common';
 import { Serialize } from 'src/interceptors/serialize.inteceptor';
 import { CreateUserDTO, SignInDTO } from './dtos/dto';
-import { UsersService } from './users.service';
+import { UsersService } from '../services/users.service';
 import { UserDTO } from 'src/users/dtos/dto';
-import { AuthService } from './auth.service';
+import { AuthService } from '../services/auth.service';
 import { CurrentUser } from './decorators/current-user.decorators';
 import { AuthGuard } from 'src/guards/auth.guard';
 

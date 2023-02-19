@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
-import { CreateUserDTO } from './dtos/dto';
+import { CreateUserDTO } from '../users/dtos/dto';
 import { UsersService } from './users.service';
 import { promisify } from 'util';
 

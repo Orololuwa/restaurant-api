@@ -4,7 +4,7 @@ import { OrderedIngredientsModule } from 'src/ordered-ingredients/ordered-ingred
 import { UsersModule } from 'src/users/users.module';
 import { OrdersController } from './orders.controller';
 import { Order } from './orders.entity';
-import { OrdersService } from './orders.service';
+import { OrdersService } from '../services/orders.service';
 
 @Module({
   imports: [
