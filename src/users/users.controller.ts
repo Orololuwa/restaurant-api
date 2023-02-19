@@ -15,8 +15,8 @@ import { CreateUserDTO, SignInDTO } from './dtos/dto';
 import { UsersService } from '../services/users.service';
 import { UserDTO } from 'src/users/dtos/dto';
 import { AuthService } from '../services/auth.service';
-import { CurrentUser } from './decorators/current-user.decorators';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { CurrentUser } from '../core/decorators/current-user.decorators';
+import { AuthGuard } from 'src/core/guards/auth.guard';
 
 @Controller('auth')
 @Serialize(UserDTO)
