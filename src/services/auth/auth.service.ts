@@ -114,6 +114,4 @@ export class AuthService {
       access_token,
     };
   }
-
-  async signOutJWT() {}
 }

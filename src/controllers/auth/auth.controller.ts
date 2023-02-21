@@ -7,7 +7,7 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { CreateUserDTO, SignInDTO, UserDTO } from './dtos/dto';
+import { CreateUserDTO, SignInDTO, UserDTO } from '../users/dtos/dto';
 import { AuthService } from 'src/services/auth/auth.service';
 import { CurrentUser } from 'src/core/decorators/current-user.decorators';
 import { LocalAuthGuard } from 'src/core/guards/local-auth.guard';

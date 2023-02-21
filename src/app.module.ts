@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dataSourceOptions } from 'db/data-source';
 import { UsersModule } from './controllers/users/users.module';
-import { AuthModule } from './controllers/users/auth.module';
+import { AuthModule } from './controllers/auth/auth.module';
 import { OrdersModule } from './controllers/orders/orders.module';
 import { OrderedIngredientsModule } from './controllers/ordered-ingredients/ordered-ingredients.module';
 const cookieSession = require('cookie-session');
