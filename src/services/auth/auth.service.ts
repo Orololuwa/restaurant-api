@@ -4,12 +4,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDTO } from '../../users/dtos/dto';
-import { UsersService } from '../users.service';
+import { UsersService } from '../users/users.service';
 import { isPasswordValid } from 'src/lib/validators';
 import { ResponseState } from 'src/lib/helpers';
 import { compareHash, createHash } from 'src/lib/utils';
 import { JwtService } from '@nestjs/jwt';
+import { CreateUserDTO } from 'src/controllers/users/dtos/dto';
 
 @Injectable()
 export class AuthService {
@@ -114,4 +114,6 @@ export class AuthService {
       access_token,
     };
   }
+
+  async signOutJWT() {}
 }

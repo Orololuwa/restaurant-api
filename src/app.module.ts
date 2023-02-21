@@ -1,14 +1,14 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { IngredientsModule } from './ingredients/ingredients.module';
+import { IngredientsModule } from './controllers/ingredients/ingredients.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module';
-import { OrdersModule } from './orders/orders.module';
-import { OrderedIngredientsModule } from './ordered-ingredients/ordered-ingredients.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dataSourceOptions } from 'db/data-source';
-import { AuthModule } from './users/auth.module';
+import { UsersModule } from './controllers/users/users.module';
+import { AuthModule } from './controllers/users/auth.module';
+import { OrdersModule } from './controllers/orders/orders.module';
+import { OrderedIngredientsModule } from './controllers/ordered-ingredients/ordered-ingredients.module';
 const cookieSession = require('cookie-session');
 
 @Module({
