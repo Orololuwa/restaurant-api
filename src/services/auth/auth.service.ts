@@ -100,9 +100,11 @@ export class AuthService {
       address,
       name,
     });
+
+    return this.signInJWT({ email: user.email, id: user.id });
   }
 
-  async signInJWT(user: { email: string; id: string }) {
+  async signInJWT(user: { email: string; id: number }) {
     const payload = { username: user.email, sub: user.id };
 
     const access_token = this.jwtService.sign(payload);

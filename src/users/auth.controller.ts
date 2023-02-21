@@ -51,6 +51,11 @@ export class AuthController {
     return this.authService.signInJWT(req.user);
   }
 
+  @Post('/signup/jwt')
+  async signUpJWT(@Body() body: CreateUserDTO) {
+    return this.authService.signUpJWT(body);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Serialize(UserDTO)
   @Get('/profile')
