@@ -7,7 +7,7 @@ export const dataSourceOptions: DataSourceOptions =
         type: 'postgres',
         url: process.env.DATABASE_URL,
         migrationsRun: true,
-        entities: ['dist/**/*.entity.js'],
+        entities: ['dist/**/**/*.entity.js'],
         ssl: {
           rejectUnauthorized: false,
         },
@@ -17,7 +17,7 @@ export const dataSourceOptions: DataSourceOptions =
         synchronize: false,
         type: 'sqlite',
         database: 'test.sqlite',
-        entities: ['dist/**/*.entity.ts'],
+        entities: ['dist/**/**/*.entity.ts'],
         migrations: ['dist/db/migrations/*.js'],
         migrationsRun: true,
       }
@@ -25,7 +25,7 @@ export const dataSourceOptions: DataSourceOptions =
         synchronize: false,
         type: 'sqlite',
         database: 'dev.sqlite',
-        entities: ['dist/**/*.entity.js'],
+        entities: ['dist/**/**/*.entity.js'],
         migrations: ['dist/db/migrations/*.js'],
       };
 

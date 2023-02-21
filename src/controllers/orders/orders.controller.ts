@@ -2,10 +2,10 @@ import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from 'src/core/guards/auth.guard';
 import { Serialize } from 'src/core/interceptors/serialize.inteceptor';
 import { CurrentUser } from 'src/core/decorators/current-user.decorators';
-import { CreateUserDTO } from 'src/users/dtos/dto';
+import { CreateUserDTO } from 'src/controllers/users/dtos/dto';
 import { CreateOrderDTO } from './dto/create-order.dto';
 import { OrderDTO } from './dto/order.dto';
-import { OrdersService } from '../services/orders.service';
+import { OrdersService } from 'src/services/orders/orders.service';
 
 @Controller('orders')
 @Serialize(OrderDTO)
