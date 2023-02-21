@@ -8,6 +8,7 @@ import { OrdersModule } from './orders/orders.module';
 import { OrderedIngredientsModule } from './ordered-ingredients/ordered-ingredients.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dataSourceOptions } from 'db/data-source';
+import { AuthModule } from './users/auth.module';
 const cookieSession = require('cookie-session');
 
 @Module({
@@ -19,6 +20,7 @@ const cookieSession = require('cookie-session');
     TypeOrmModule.forRoot(dataSourceOptions),
     IngredientsModule,
     UsersModule,
+    AuthModule,
     OrdersModule,
     OrderedIngredientsModule,
   ],

@@ -1,7 +1,18 @@
-export const isPasswordValid = (password: string) => {
-  const passwordRegex =
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*_<,>.?/"";:{{}}|+=)(])[A-Za-z\d!@#$%^&*_<,>.?/"";:{{}}|+=)(]{7,}$/;
-  const passwordValidate = passwordRegex.test(password);
-  if (!passwordValidate) return false;
-  return true;
+import * as bcrypt from 'bcrypt';
+
+/** hash password */
+const saltRound = 10;
+export const createHash = async (password: string) => {
+  const hash = await bcrypt.hash(password, saltRound);
+  return hash;
+};
+/** compare hash password */
+
+export const compareHash = async (password: string, hashedPassword: string) => {
+  try {
+    const bool = await bcrypt.compare(password, hashedPassword);
+    return bool;
+  } catch (e) {
+    throw e;
+  }
 };
