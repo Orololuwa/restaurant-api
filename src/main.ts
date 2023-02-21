@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 const cookieSession = require('cookie-session');
 
 async function bootstrap() {
@@ -17,6 +18,7 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-  await app.listen(process.env.PORT || 3450);
+
+  await app.listen(3450);
 }
 bootstrap();
