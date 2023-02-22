@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { COOKIE_SESSION, PORT } from './lib/config/app.config';
 const cookieSession = require('cookie-session');
 
 async function bootstrap() {
@@ -9,7 +9,7 @@ async function bootstrap() {
 
   app.use(
     cookieSession({
-      keys: ['nobeyougotellmewetinigodo'],
+      keys: [COOKIE_SESSION.secret],
     }),
   );
 
@@ -19,6 +19,6 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3450);
+  await app.listen(PORT);
 }
 bootstrap();
