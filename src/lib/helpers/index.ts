@@ -3,6 +3,4 @@ export enum ResponseState {
   SUCCESS = 'success',
 }
 
-export const jwtConstants = {
-  secret: 'dwightSchrutesPerfectValentines',
-};
+
