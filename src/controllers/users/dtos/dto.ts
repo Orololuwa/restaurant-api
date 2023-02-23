@@ -1,5 +1,6 @@
 import { Expose } from 'class-transformer';
-import { IsEmail, isString, IsString } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
+import { Role } from 'src/lib/helpers';
 
 export class CreateUserDTO {
   @IsString()
@@ -13,6 +14,9 @@ export class CreateUserDTO {
 
   @IsString()
   password: string;
+
+  @IsString()
+  role: Role;
 }
 
 export class UserDTO {
@@ -24,6 +28,9 @@ export class UserDTO {
 
   @Expose()
   email: string;
+
+  @Expose()
+  role: Role;
 }
 
 export class SignInDTO {

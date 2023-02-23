@@ -3,4 +3,7 @@ export enum ResponseState {
   SUCCESS = 'success',
 }
 
-
+export enum Role {
+  User = 'user',
+  Admin = 'admin',
+}
