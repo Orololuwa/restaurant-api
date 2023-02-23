@@ -78,6 +78,6 @@ export class OrdersService {
       throw new NotFoundException('Order not Found');
     }
 
-    return this.repo.delete(order);
+    return this.repo.remove(order);
   }
 }

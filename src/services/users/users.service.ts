@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/controllers/users/users.entity';
+import { Role } from 'src/lib/helpers';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +13,7 @@ export class UsersService {
     email: string;
     address: string;
     password?: string;
+    role?: Role;
   }) {
     const user = this.repo.create(body);
 

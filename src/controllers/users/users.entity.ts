@@ -1,4 +1,5 @@
 import { Order } from 'src/controllers/orders/orders.entity';
+import { Role } from 'src/lib/helpers';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -14,6 +15,9 @@ export class User {
 
   @Column()
   address: string;
+
+  @Column({ default: Role.User })
+  role: string;
 
   @Column({ nullable: true })
   password: string;

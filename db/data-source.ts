@@ -30,27 +30,5 @@ export const dataSourceOptions: DataSourceOptions =
         migrations: ['dist/db/migrations/*.js'],
       };
 
-// switch (process.env.NODE_ENV) {
-//   case 'development':
-//     Object.assign(dataSourceOptions, {
-//       type: 'sqlite',
-//       database: 'db.sqlite',
-//       entities: ['/dist/**/*.entity.js'],
-//     });
-//     break;
-//   case 'test':
-//     Object.assign(dataSourceOptions, {
-//       type: 'sqlite',
-//       database: 'test.sqlite',
-//       entities: ['/dist/**/*.entity.ts'],
-//       migrationsRun: true,
-//     });
-//     break;
-//   case 'production':
-//     break;
-//   default:
-//     throw new Error('unknown environment');
-// }
-
 const dataSource = new DataSource(dataSourceOptions);
 export default dataSource;
