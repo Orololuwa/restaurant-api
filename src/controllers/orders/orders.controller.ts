@@ -1,14 +1,23 @@
-import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from 'src/core/guards/auth.guard';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { Serialize } from 'src/core/interceptors/serialize.inteceptor';
 import { CurrentUser } from 'src/core/decorators/current-user.decorators';
 import { CreateUserDTO } from 'src/controllers/users/dtos/dto';
 import { CreateOrderDTO } from './dto/create-order.dto';
 import { OrderDTO } from './dto/order.dto';
 import { OrdersService } from 'src/services/orders/orders.service';
+import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 
 @Controller('orders')
 @Serialize(OrderDTO)
+@UseGuards(JwtAuthGuard)
 export class OrdersController {
   constructor(private ordersService: OrdersService) {}
 
@@ -25,8 +34,7 @@ export class OrdersController {
   }
 
   @Get()
-  @UseGuards(AuthGuard)
-  getAllOrders(@CurrentUser() user: CreateUserDTO) {
+  getAllOrders(@Request() user: CreateUserDTO) {
     return this.ordersService.find(user);
   }
 

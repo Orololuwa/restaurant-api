@@ -1,8 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateIngredientDTO, UpdateIngredientCountDTO } from './dto';
 import { IngredientsService } from '../../services/ingredients/ingredients.service';
+import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
+import { JwtAdminGuard } from 'src/core/guards/jwt-admin.guard';
 
 @Controller('ingredients')
+@UseGuards(JwtAuthGuard)
 export class IngredientsController {
   constructor(private ingredientsService: IngredientsService) {}
 
@@ -11,6 +22,7 @@ export class IngredientsController {
     return this.ingredientsService.find();
   }
 
+  @UseGuards(JwtAdminGuard)
   @Post('/create')
   createIngredient(@Body() body: CreateIngredientDTO) {
     return this.ingredientsService.create(body.name);
