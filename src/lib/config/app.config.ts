@@ -18,6 +18,7 @@ function getEnv(variable: string, optional: boolean = false) {
 
 export const JWT_CONSTANT = {
   secret: getEnv('JWT_CONSTANT'),
+  expiration: 1800,
 };
 
 export const COOKIE_SESSION = {

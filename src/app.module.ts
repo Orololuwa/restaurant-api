@@ -29,7 +29,7 @@ const cookieSession = require('cookie-session');
     OrderedIngredientsModule,
     JwtModule.register({
       secret: JWT_CONSTANT.secret,
-      signOptions: { expiresIn: '1800s' },
+      signOptions: { expiresIn: `${JWT_CONSTANT.expiration}s` },
     }),
   ],
   controllers: [AppController],

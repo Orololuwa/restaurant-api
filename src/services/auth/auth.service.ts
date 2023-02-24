@@ -18,7 +18,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signUp(body: CreateUserDTO) {
+  async createUser(body: CreateUserDTO) {
     const [existingUser] = await this.usersService.find(body.email);
 
     if (existingUser) {
@@ -31,24 +31,6 @@ export class AuthService {
     });
 
     return user;
-  }
-
-  async signIn(body: { email: string; password: string }) {
-    const [existingUser] = await this.usersService.find(body.email);
-
-    if (!existingUser) {
-      throw new NotFoundException('Email does not exist');
-    }
-
-    if (!existingUser.password) {
-      throw new BadRequestException('Password not set: Cannot sign you in');
-    }
-
-    if (await compareHash(body.password, existingUser.password)) {
-      throw new BadRequestException('Incorrect Email or password');
-    }
-
-    return existingUser;
   }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -76,7 +58,7 @@ export class AuthService {
     return result;
   }
 
-  async signUpJWT(body: CreateUserDTO) {
+  async signUp(body: CreateUserDTO) {
     const { email, password, address, name } = body;
     const [existingUser] = await this.usersService.find(email);
 
@@ -101,10 +83,10 @@ export class AuthService {
       name,
     });
 
-    return this.signInJWT({ email: user.email, id: user.id });
+    return this.signIn({ email: user.email, id: user.id });
   }
 
-  async signInJWT(user: { email: string; id: number }) {
+  async signIn(user: { email: string; id: number }) {
     const payload = { username: user.email, sub: user.id };
 
     const access_token = this.jwtService.sign(payload);
