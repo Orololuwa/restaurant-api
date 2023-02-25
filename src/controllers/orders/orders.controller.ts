@@ -8,8 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Serialize } from 'src/core/interceptors/serialize.inteceptor';
-import { CurrentUser } from 'src/core/decorators/current-user.decorators';
-import { CreateUserDTO } from 'src/controllers/users/dtos/dto';
 import { CreateOrderDTO } from './dto/create-order.dto';
 import { OrderDTO } from './dto/order.dto';
 import { OrdersService } from 'src/services/orders/orders.service';
@@ -22,20 +20,13 @@ export class OrdersController {
   constructor(private ordersService: OrdersService) {}
 
   @Post()
-  createOrder(@Body() body: CreateOrderDTO) {
-    return this.ordersService.create({
-      deliveryMethod: body.deliveryMethod,
-      price: body.price,
-      email: body.email,
-      name: body.name,
-      address: body.address,
-      ingredients: body.ingredients,
-    });
+  createOrder(@Body() body: CreateOrderDTO, @Request() req: any) {
+    return this.ordersService.create(body, req.user);
   }
 
   @Get()
-  getAllOrders(@Request() user: CreateUserDTO) {
-    return this.ordersService.find(user);
+  getAllOrders(@Request() req: any) {
+    return this.ordersService.find(req.user);
   }
 
   @Delete()

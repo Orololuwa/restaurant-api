@@ -8,15 +8,6 @@ export class CreateOrderDTO {
   @IsString()
   deliveryMethod: string;
 
-  @IsString()
-  name: string;
-
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  address: string;
-
   @IsObject()
   ingredients: CreateOrderedIngredientDTO;
 }
