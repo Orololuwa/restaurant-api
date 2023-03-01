@@ -59,7 +59,7 @@ export class AuthService {
   }
 
   async signUp(body: CreateUserDTO) {
-    const { email, password, address, name } = body;
+    const { email, password, address, name, role } = body;
     const [existingUser] = await this.usersService.find(email);
 
     if (existingUser) {
@@ -68,19 +68,16 @@ export class AuthService {
 
     const isPasswordValidated = isPasswordValid(password);
 
-    if (!isPasswordValidated)
-      return Promise.reject({
-        status: HttpStatus.BAD_REQUEST,
-        message: 'Password Invalid',
-        error: null,
-        state: ResponseState.ERROR,
-      });
+    if (!isPasswordValidated) {
+      throw new BadRequestException('Password Invalid!');
+    }
 
     const user = await this.usersService.create({
       email,
       password: await createHash(password),
       address,
       name,
+      role,
     });
 
     return this.signIn({ email: user.email, id: user.id });
