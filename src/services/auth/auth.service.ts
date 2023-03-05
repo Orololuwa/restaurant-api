@@ -33,7 +33,7 @@ export class AuthService {
     return user;
   }
 
-  async validateUser(email: string, pass: string): Promise<any> {
+  async validateUser(email: string, pass: string) {
     const [user] = await this.usersService.find(email);
 
     if (!user) {
@@ -74,16 +74,17 @@ export class AuthService {
 
     const user = await this.usersService.create({
       email,
-      password: await createHash(password),
+      password,
       address,
       name,
       role,
     });
 
-    return this.signIn({ email: user.email, id: user.id });
+    return this.signIn({ email: user.email, password: user.password });
   }
 
-  async signIn(user: { email: string; id: number }) {
+  async signIn(body: { email: string; password: string }) {
+    const user = await this.validateUser(body.email, body.password);
     const payload = { username: user.email, sub: user.id };
 
     const access_token = this.jwtService.sign(payload);
