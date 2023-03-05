@@ -22,38 +22,44 @@ export class AdminGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const role = this.reflector.get<Role>('role', context.getHandler());
-    if (!role) {
+    try {
+      const role = this.reflector.get<Role>('role', context.getHandler());
+      if (!role) {
+        return true;
+      }
+
+      if (role !== Role.Admin) {
+        return true;
+      }
+
+      const request: Request = context.switchToHttp().getRequest();
+      let token: string = request.headers.authorization;
+      if (!token) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+      token = token.replace('Bearer ', '');
+
+      const decoded = await this.jwtService.verifyAsync(token);
+
+      if (!decoded) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+
+      const user = await this.usersService.findOne(decoded.sub);
+      if (isEmpty(user)) {
+        throw new ForbiddenException('User does not exist');
+      }
+
+      if (user.role !== role) {
+        throw new ForbiddenException(
+          'User unauthorized to perform this action',
+        );
+      }
+
+      request.user = user;
       return true;
+    } catch (error) {
+      throw new UnauthorizedException(error?.message || 'Unauthorized');
     }
-
-    if (role !== Role.Admin) {
-      return true;
-    }
-
-    const request: Request = context.switchToHttp().getRequest();
-    let token: string = request.headers.authorization;
-    if (!token) {
-      throw new UnauthorizedException('Unauthorized');
-    }
-    token = token.replace('Bearer ', '');
-
-    const decoded = await this.jwtService.verifyAsync(token);
-
-    if (!decoded) {
-      throw new UnauthorizedException('Unauthorized');
-    }
-
-    const user = await this.usersService.findOne(decoded.sub);
-    if (isEmpty(user)) {
-      throw new ForbiddenException('User does not exist');
-    }
-
-    if (user.role !== role) {
-      throw new ForbiddenException('User unauthorized to perform this action');
-    }
-
-    request.user = user;
-    return true;
   }
 }

@@ -1,14 +1,60 @@
-import { CanActivate, ExecutionContext } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
+import { Role } from 'src/lib/helpers';
+import { isEmpty } from 'src/lib/utils';
+import { UsersService } from 'src/services/users/users.service';
 
+@Injectable()
 export class AuthGuard implements CanActivate {
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest();
+  constructor(
+    private reflector: Reflector,
+    private jwtService: JwtService,
+    private usersService: UsersService,
+  ) {}
 
-    const { userId } = request.session;
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    try {
+      const role = this.reflector.get<Role>('role', context.getHandler());
+      if (!role) {
+        return true;
+      }
 
-    return userId;
+      const request: Request = context.switchToHttp().getRequest();
+      let token: string = request.headers.authorization;
+      if (!token) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+      token = token.replace('Bearer ', '');
+
+      const decoded = await this.jwtService.verifyAsync(token);
+
+      if (!decoded) {
+        throw new UnauthorizedException('Unauthorized');
+      }
+
+      const user = await this.usersService.findOne(decoded.sub);
+      if (isEmpty(user)) {
+        throw new ForbiddenException('User does not exist');
+      }
+
+      if (role === Role.Admin && user.role !== Role.Admin) {
+        throw new ForbiddenException(
+          'User unauthorized to perform this action',
+        );
+      }
+
+      request.user = user;
+      return true;
+    } catch (error) {
+      throw new UnauthorizedException(error?.message || 'Unauthorized');
+    }
   }
 }
