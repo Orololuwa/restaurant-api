@@ -1,87 +1,127 @@
 import {
   BadRequestException,
-  ForbiddenException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderedIngredientsService } from 'src/services/ingredients/ordered-ingredients.service';
-import { UsersService } from 'src/services/users/users.service';
 import { Repository } from 'typeorm';
 import { CreateOrderDTO } from 'src/controllers/orders/dto/create-order.dto';
 import { Order } from 'src/controllers/orders/orders.entity';
 import { User } from 'src/controllers/users/users.entity';
+import { ResponseState } from 'src/lib/helpers';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(Order) private repo: Repository<Order>,
-    private usersService: UsersService,
     private orderedIngredientsService: OrderedIngredientsService,
   ) {}
 
   async create(body: CreateOrderDTO, user: User) {
-    try {
-      const order = this.repo.create({
-        price: body.price,
-        deliveryMethod: body.deliveryMethod,
+    const order = this.repo.create({
+      price: body.price,
+      deliveryMethod: body.deliveryMethod,
+    });
+
+    const ingredients = await this.orderedIngredientsService.create(
+      body.ingredients,
+    );
+
+    if (!order || !ingredients) {
+      return Promise.reject({
+        message: 'Error creating order',
+        error: 'BadRequest',
+        status: HttpStatus.BAD_REQUEST,
+        state: ResponseState.ERROR,
+      });
+    }
+
+    order.ingredients = ingredients;
+
+    order.user = user;
+
+    this.repo.save(order);
+
+    return {
+      message: 'Order created successfully',
+      data: {
+        order,
+      },
+      status: HttpStatus.OK,
+      state: ResponseState.SUCCESS,
+    };
+  }
+
+  async find(user: User) {
+    const orders = await this.repo
+      // .createQueryBuilder('orders')
+      // .leftJoinAndSelect('orders.user', 'user')
+      // .select([
+      //   'orders.id',
+      //   'orders.price',
+      //   'orders.deliveryMethod',
+      //   'user.id',
+      //   'user.name',
+      //   'user.email',
+      // ])
+      // .leftJoinAndSelect('orders.ingredients', 'ingredients')
+      // .getMany();
+      .find({
+        where: { user },
+        relations: {
+          ingredients: true,
+        },
       });
 
-      const ingredients = await this.orderedIngredientsService.create(
-        body.ingredients,
-      );
-
-      if (!order || !ingredients) {
-        throw new BadRequestException('Error creating order');
-      }
-
-      order.ingredients = ingredients;
-
-      order.user = user;
-
-      return this.repo.save(order);
-    } catch (error) {
-      throw error;
-    }
+    return {
+      message: 'Orders retrieved successfully',
+      data: {
+        orders: orders,
+      },
+      status: HttpStatus.FOUND,
+      state: ResponseState.SUCCESS,
+    };
   }
 
-  find(user: User) {
-    return (
-      this.repo
-        // .createQueryBuilder('orders')
-        // .leftJoinAndSelect('orders.user', 'user')
-        // .select([
-        //   'orders.id',
-        //   'orders.price',
-        //   'orders.deliveryMethod',
-        //   'user.id',
-        //   'user.name',
-        //   'user.email',
-        // ])
-        // .leftJoinAndSelect('orders.ingredients', 'ingredients')
-        // .getMany();
-        .find({
-          where: { user },
-          relations: {
-            ingredients: true,
-            user: true,
-          },
-        })
-    );
-  }
+  async findOne(id: number) {
+    if (!id)
+      return Promise.reject({
+        message: 'Please provide a valid Id',
+        error: 'NotFound',
+        status: HttpStatus.NOT_FOUND,
+        state: ResponseState.ERROR,
+      });
 
-  findOne(id: number) {
-    if (!id) return;
-    return this.repo.findOneBy({ id });
+    const order = await this.repo.findOneBy({ id });
+
+    return {
+      message: 'Order retrieved successfully',
+      data: { order },
+      status: HttpStatus.FOUND,
+      state: ResponseState.SUCCESS,
+    };
   }
 
   async delete(id: number) {
-    const order = await this.findOne(id);
+    if (!id)
+      return Promise.reject({
+        message: 'Please provide a valid Id',
+        error: 'NotFound',
+        status: HttpStatus.NOT_FOUND,
+        state: ResponseState.ERROR,
+      });
 
-    if (!order) {
-      throw new NotFoundException('Order not Found');
-    }
+    const order = await this.repo.findOneBy({ id });
 
-    return this.repo.remove(order);
+    await this.repo.remove(order);
+
+    return {
+      message: 'Order deleted successfully',
+      data: { order },
+      status: HttpStatus.OK,
+      state: ResponseState.SUCCESS,
+    };
   }
 }
