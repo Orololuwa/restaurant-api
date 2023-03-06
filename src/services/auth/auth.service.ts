@@ -74,13 +74,13 @@ export class AuthService {
 
     const user = await this.usersService.create({
       email,
-      password,
+      password: await createHash(password),
       address,
       name,
       role,
     });
 
-    return this.signIn({ email: user.email, password: user.password });
+    return this.signIn({ email: user.email, password });
   }
 
   async signIn(body: { email: string; password: string }) {
@@ -90,8 +90,13 @@ export class AuthService {
     const access_token = this.jwtService.sign(payload);
 
     return {
-      user,
-      access_token,
+      message: 'User logged in successfully',
+      data: {
+        user,
+        access_token,
+      },
+      status: HttpStatus.OK,
+      state: ResponseState.SUCCESS,
     };
   }
 }

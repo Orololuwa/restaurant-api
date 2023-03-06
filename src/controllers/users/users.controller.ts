@@ -5,7 +5,6 @@ import {
   HttpStatus,
   Param,
   Query,
-  Req,
   Res,
 } from '@nestjs/common';
 import { Serialize } from 'src/core/interceptors/serialize.inteceptor';
@@ -22,11 +21,7 @@ export class UsersController {
 
   @Get('')
   @auth(Role.Admin)
-  async getAllUsers(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Query('email') email: string,
-  ) {
+  async getAllUsers(@Res() res: Response, @Query('email') email: string) {
     try {
       const response = await this.usersService.find(email);
       return res.status(HttpStatus.OK).json(response);
