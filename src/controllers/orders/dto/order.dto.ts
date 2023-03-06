@@ -1,5 +1,6 @@
-import { Expose, Transform } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { OrderedIngredients } from 'src/controllers/ordered-ingredients/ordered-ingredients.entity';
+import { UserDTO } from 'src/controllers/users/dtos/dto';
 import { User } from 'src/controllers/users/users.entity';
 
 export class OrderDTO {
@@ -15,8 +16,4 @@ export class OrderDTO {
   @Expose()
   @Transform(({ obj }) => obj.ingredients)
   ingredients: OrderedIngredients;
-
-  @Expose()
-  @Transform(({ obj }) => obj.user)
-  user: User;
 }

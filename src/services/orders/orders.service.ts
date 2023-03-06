@@ -1,8 +1,6 @@
 import {
-  BadRequestException,
   HttpStatus,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderedIngredientsService } from 'src/services/ingredients/ordered-ingredients.service';
@@ -42,7 +40,9 @@ export class OrdersService {
 
     order.user = user;
 
-    this.repo.save(order);
+    await this.repo.save(order);
+
+    delete order.user;
 
     return {
       message: 'Order created successfully',
@@ -56,24 +56,27 @@ export class OrdersService {
 
   async find(user: User) {
     const orders = await this.repo
-      // .createQueryBuilder('orders')
-      // .leftJoinAndSelect('orders.user', 'user')
-      // .select([
-      //   'orders.id',
-      //   'orders.price',
-      //   'orders.deliveryMethod',
-      //   'user.id',
-      //   'user.name',
-      //   'user.email',
-      // ])
-      // .leftJoinAndSelect('orders.ingredients', 'ingredients')
-      // .getMany();
-      .find({
-        where: { user },
-        relations: {
-          ingredients: true,
-        },
-      });
+      .createQueryBuilder('orders')
+      .where({ user })
+      .leftJoinAndSelect('orders.user', 'user')
+      .select([
+        'orders.id',
+        'orders.price',
+        'orders.deliveryMethod',
+        'user.id',
+        'user.name',
+        'user.email',
+      ])
+      .leftJoinAndSelect('orders.ingredients', 'ingredients')
+      .getMany();
+    // .find({
+    //   where: { user },
+    //   relations: {
+    //     ingredients: true,
+    //     user: true,
+    //   },
+    // }
+    // );
 
     return {
       message: 'Orders retrieved successfully',
