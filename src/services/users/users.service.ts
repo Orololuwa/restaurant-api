@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/controllers/users/users.entity';
-import { Role } from 'src/lib/helpers';
+import { ResponseState, Role } from 'src/lib/helpers';
 
 @Injectable()
 export class UsersService {
@@ -20,8 +20,22 @@ export class UsersService {
     return this.repo.save(user);
   }
 
-  find(email: string) {
+  async find(email: string) {
     return this.repo.find({ where: { email } });
+  }
+
+  async findAll() {
+    const users = await this.repo
+      .createQueryBuilder('user')
+      .select(['user.id', 'user.name', 'user.email', 'user.address'])
+      .getMany();
+
+    return {
+      message: 'Users retrieved successfully',
+      data: { users },
+      status: HttpStatus.OK,
+      state: ResponseState.SUCCESS,
+    };
   }
 
   findOne(id: number) {
