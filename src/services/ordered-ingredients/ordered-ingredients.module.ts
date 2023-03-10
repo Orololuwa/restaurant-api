@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { OrderedIngredientsService } from 'src/services/ingredients/ordered-ingredients.service';
-import { OrderedIngredientsController } from './ordered-ingredients.controller';
+import { OrderedIngredientsService } from 'src/services/ordered-ingredients/ordered-ingredients.service';
+import { OrderedIngredientsController } from '../../controllers/ordered-ingredients/ordered-ingredients.controller';
 import { OrderedIngredients } from '../../core/entities/ordered-ingredients.entity';
 
 @Module({
