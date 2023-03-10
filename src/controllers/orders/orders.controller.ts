@@ -4,7 +4,7 @@ import { CreateOrderDTO } from './dto/create-order.dto';
 import { OrderDTO } from './dto/order.dto';
 import { OrdersService } from 'src/services/orders/orders.service';
 import { Request, Response } from 'express';
-import { User } from '../users/users.entity';
+import { User } from '../../core/entities/users.entity';
 import { auth } from 'src/core/decorators/auth.decorator';
 import { Role } from 'src/lib/helpers';
 

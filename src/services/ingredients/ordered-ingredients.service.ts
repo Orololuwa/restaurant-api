@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateOrderedIngredientDTO } from 'src/controllers/ordered-ingredients/dtos/create-ordered-ingredient';
-import { OrderedIngredients } from 'src/controllers/ordered-ingredients/ordered-ingredients.entity';
+import { OrderedIngredients } from 'src/core/entities/ordered-ingredients.entity';
 
 @Injectable()
 export class OrderedIngredientsService {

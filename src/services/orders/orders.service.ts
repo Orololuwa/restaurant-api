@@ -1,13 +1,10 @@
-import {
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderedIngredientsService } from 'src/services/ingredients/ordered-ingredients.service';
 import { Repository } from 'typeorm';
 import { CreateOrderDTO } from 'src/controllers/orders/dto/create-order.dto';
-import { Order } from 'src/controllers/orders/orders.entity';
-import { User } from 'src/controllers/users/users.entity';
+import { Order } from 'src/core/entities/orders.entity';
+import { User } from 'src/core/entities/users.entity';
 import { ResponseState } from 'src/lib/helpers';
 
 @Injectable()

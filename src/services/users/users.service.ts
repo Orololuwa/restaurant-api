@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from 'src/controllers/users/users.entity';
+import { User } from 'src/core/entities/users.entity';
 import { ResponseState, Role } from 'src/lib/helpers';
 
 @Injectable()

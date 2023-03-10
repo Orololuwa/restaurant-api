@@ -1,5 +1,5 @@
-import { OrderedIngredients } from 'src/controllers/ordered-ingredients/ordered-ingredients.entity';
-import { User } from 'src/controllers/users/users.entity';
+import { OrderedIngredients } from 'src/core/entities/ordered-ingredients.entity';
+import { User } from 'src/core/entities/users.entity';
 import {
   Column,
   Entity,
