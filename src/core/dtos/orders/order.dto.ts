@@ -1,6 +1,6 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { OrderedIngredients } from 'src/core/entities/ordered-ingredients.entity';
-import { UserDTO } from 'src/controllers/users/dtos/dto';
+import { UserDTO } from 'src/core/dtos/users/dto';
 import { User } from 'src/core/entities/users.entity';
 
 export class OrderDTO {

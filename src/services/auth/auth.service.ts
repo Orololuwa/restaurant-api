@@ -9,7 +9,7 @@ import { isPasswordValid } from 'src/lib/validators';
 import { ResponseState } from 'src/lib/helpers';
 import { compareHash, createHash } from 'src/lib/utils';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDTO } from 'src/controllers/users/dtos/dto';
+import { CreateUserDTO } from 'src/core/dtos/users/dto';
 
 @Injectable()
 export class AuthService {

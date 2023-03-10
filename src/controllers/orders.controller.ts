@@ -1,12 +1,12 @@
 import { Body, Controller, Delete, Get, Post, Req, Res } from '@nestjs/common';
 import { Serialize } from 'src/core/interceptors/serialize.inteceptor';
-import { CreateOrderDTO } from './dto/create-order.dto';
-import { OrderDTO } from './dto/order.dto';
+import { CreateOrderDTO } from '../core/dtos/orders/create-order.dto';
 import { OrdersService } from 'src/services/orders/orders.service';
 import { Request, Response } from 'express';
-import { User } from '../../core/entities/users.entity';
+import { User } from '../core/entities/users.entity';
 import { auth } from 'src/core/decorators/auth.decorator';
 import { Role } from 'src/lib/helpers';
+import { OrderDTO } from 'src/core/dtos/orders/order.dto';
 
 @Controller('orders')
 @Serialize(OrderDTO)

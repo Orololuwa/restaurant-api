@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Serialize } from 'src/core/interceptors/serialize.inteceptor';
 import { UsersService } from 'src/services/users/users.service';
-import { UserDTO } from 'src/controllers/users/dtos/dto';
+import { UserDTO } from 'src/core/dtos/users/dto';
 import { Role } from 'src/lib/helpers';
 import { auth } from 'src/core/decorators/auth.decorator';
 import { Response } from 'express';

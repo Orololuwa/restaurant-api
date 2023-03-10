@@ -7,8 +7,11 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { CreateIngredientDTO, UpdateIngredientCountDTO } from './dto';
-import { IngredientsService } from '../../services/ingredients/ingredients.service';
+import {
+  CreateIngredientDTO,
+  UpdateIngredientCountDTO,
+} from '../core/dtos/ingredients/dto';
+import { IngredientsService } from '../services/ingredients/ingredients.service';
 import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
 import { JwtAdminGuard } from 'src/core/guards/jwt-admin.guard';
 

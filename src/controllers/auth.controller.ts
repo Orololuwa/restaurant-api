@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, Request, Res } from '@nestjs/common';
-import { CreateUserDTO, UserDTO } from '../users/dtos/dto';
+import { CreateUserDTO, UserDTO } from '../core/dtos/users/dto';
 import { AuthService } from 'src/services/auth/auth.service';
 import { Serialize } from 'src/core/interceptors/serialize.inteceptor';
-import { LoginDTO } from './dtos/login.dto';
+import { LoginDTO } from '../core/dtos/auth/login.dto';
 import { Response } from 'express';
 import { auth } from 'src/core/decorators/auth.decorator';
 import { Role } from 'src/lib/helpers';
