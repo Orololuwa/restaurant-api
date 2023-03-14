@@ -1,4 +1,15 @@
-import { Controller } from '@nestjs/common';
+import { IsNumber } from 'class-validator';
 
-@Controller('ordered-ingredients')
-export class OrderedIngredientsController {}
+export class CreateOrderedIngredientDTO {
+  @IsNumber()
+  salad: number;
+
+  @IsNumber()
+  bacon: number;
+
+  @IsNumber()
+  cheese: number;
+
+  @IsNumber()
+  meat: number;
+}

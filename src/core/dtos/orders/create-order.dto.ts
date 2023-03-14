@@ -1,5 +1,5 @@
 import { IsNumber, IsString, IsEmail, IsObject } from 'class-validator';
-import { CreateOrderedIngredientDTO } from 'src/controllers/ordered-ingredients/dtos/create-ordered-ingredient';
+import { CreateOrderedIngredientDTO } from '../ordered-ingredients/ordered-ingredients.controller';
 
 export class CreateOrderDTO {
   @IsNumber()

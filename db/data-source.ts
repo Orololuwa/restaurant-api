@@ -7,8 +7,8 @@ export const dataSourceOptions: DataSourceOptions =
         synchronize: false,
         type: 'postgres',
         url: process.env.DATABASE_URL,
-        migrationsRun: true,
         entities: ['dist/**/**/*.entity.js'],
+        migrations: ['dist/db/migrations/*.js'],
         ssl: {
           rejectUnauthorized: false,
         },
