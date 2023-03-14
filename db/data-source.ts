@@ -23,11 +23,11 @@ export const dataSourceOptions: DataSourceOptions =
       //     migrationsRun: true,
       //   }
       {
-        synchronize: false,
+        synchronize: true,
         type: 'sqlite',
         database: 'bb.sqlite',
         entities: ['dist/**/**/**/*.entity.js'],
-        migrations: ['dist/db/migrations/*.js'],
+        // migrations: ['dist/db/migrations/*.js'],
       };
 
 const dataSource = new DataSource(dataSourceOptions);
