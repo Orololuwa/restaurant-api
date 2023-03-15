@@ -20,7 +20,7 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get('')
-  @auth(Role.Admin)
+  // @auth(Role.Admin)
   async getAllUsers(@Res() res: Response) {
     try {
       const response = await this.usersService.findAll();
