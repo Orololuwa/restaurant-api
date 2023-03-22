@@ -1,4 +1,4 @@
-import { Order } from 'src/core/entities/orders.entity';
+import { Order } from 'src/frameworks/typeorm/entities/orders.entity';
 import { Role } from 'src/lib/helpers';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 

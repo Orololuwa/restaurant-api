@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { OrderedIngredientsService } from 'src/services/ordered-ingredients/ordered-ingredients.service';
 import { Repository } from 'typeorm';
 import { CreateOrderDTO } from 'src/core/dtos/orders/create-order.dto';
-import { Order } from 'src/core/entities/orders.entity';
-import { User } from 'src/core/entities/users.entity';
+import { Order } from 'src/frameworks/typeorm/entities/orders.entity';
+import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import { ResponseState } from 'src/lib/helpers';
 
 @Injectable()

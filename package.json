@@ -26,10 +26,8 @@
     "migration:revert": "npm run typeorm -- migration:revert",
     "migration:generate:prod": "NODE_ENV=production npm run migration:generate db/migrations/prod",
     "migration:run:prod": "NODE_ENV=production npm run migration:run",
-    "migration:generate:dev": "NODE_ENV=development npm run migration:generate db/migrations/dev",
-    "migration:run:dev": "NODE_ENV=development npm run migration:run",
-    "migration:generate:stag": "NODE_ENV=staging npm run migration:generate db/migrations/stag",
-    "migration:run:stag": "NODE_ENV=staging npm run migration:run",
+    "migration:generate:dev": "npm run migration:generate db/migrations/dev",
+    "migration:run:dev": "npm run migration:run",
     "heroku:deploy": "git push heroku HEAD:master"
   },
   "dependencies": {

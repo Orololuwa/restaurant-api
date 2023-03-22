@@ -1,7 +1,7 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { OrderedIngredients } from 'src/core/entities/ordered-ingredients.entity';
+import { OrderedIngredients } from 'src/frameworks/typeorm/entities/ordered-ingredients.entity';
 import { UserDTO } from 'src/core/dtos/users/dto';
-import { User } from 'src/core/entities/users.entity';
+import { User } from 'src/frameworks/typeorm/entities/users.entity';
 
 export class OrderDTO {
   @Expose()
