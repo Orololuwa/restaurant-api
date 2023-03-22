@@ -15,6 +15,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { JWT_CONSTANT } from 'src/lib/config/app.config';
 const cookieSession = require('cookie-session');
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+    }
+  }
+}
+
 @Module({
   imports: [
     ConfigModule.forRoot({
