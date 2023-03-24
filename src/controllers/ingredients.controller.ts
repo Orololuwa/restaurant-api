@@ -4,43 +4,68 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  UseGuards,
+  Query,
+  Res,
 } from '@nestjs/common';
-import {
-  CreateIngredientDTO,
-  UpdateIngredientCountDTO,
-} from '../core/dtos/ingredients/dto';
+import { UpdateIngredientCountDTO } from '../core/dtos/ingredients/update-ingredient.dto';
 import { IngredientsService } from '../services/ingredients/ingredients.service';
-import { JwtAuthGuard } from 'src/core/guards/jwt-auth.guard';
-import { JwtAdminGuard } from 'src/core/guards/jwt-admin.guard';
+import { CreateIngredientDTO } from 'src/core/dtos/ingredients/create-ingredient.dto';
+import { Response } from 'express';
 
 @Controller('ingredients')
-@UseGuards(JwtAuthGuard)
 export class IngredientsController {
   constructor(private ingredientsService: IngredientsService) {}
 
   @Get()
-  getAllIngredients() {
-    return this.ingredientsService.find();
+  async getAllIngredients(
+    @Query() query: { name: string },
+    @Res() res: Response,
+  ) {
+    try {
+      const { name } = query;
+      const response = await this.ingredientsService.find({ name });
+      return res.status(response.status).json(response);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.response);
+    }
   }
 
-  @UseGuards(JwtAdminGuard)
-  @Post('/create')
-  createIngredient(@Body() body: CreateIngredientDTO) {
-    return this.ingredientsService.create(body.name);
+  @Post()
+  async createIngredient(
+    @Body() body: CreateIngredientDTO,
+    @Res() res: Response,
+  ) {
+    try {
+      const response = await this.ingredientsService.create(body);
+      return res.status(response.status).json(response);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.response);
+    }
   }
 
-  @Post('/:id')
-  incrementIngredientCount(
+  @Patch('/:id')
+  async updateIngredient(
     @Param('id') id: string,
     @Body() body: UpdateIngredientCountDTO,
+    @Res() res: Response,
   ) {
-    return this.ingredientsService.update(+id, { count: body.count });
+    try {
+      const response = await this.ingredientsService.update(+id, body);
+      return res.status(response.status).json(response);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.response);
+    }
   }
 
   @Delete('/:id')
-  deleteIngredient(@Param('id') id: string) {
-    return this.ingredientsService.delete(+id);
+  async deleteIngredient(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const response = await this.ingredientsService.delete(+id);
+      return res.status(response.status).json(response);
+    } catch (error) {
+      return res.status(error.status || 500).json(error.response);
+    }
   }
 }

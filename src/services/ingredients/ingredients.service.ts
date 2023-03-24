@@ -1,5 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateIngredientDTO } from 'src/core/dtos/ingredients/create-ingredient.dto';
+import { ResponseState } from 'src/lib/helpers';
 import { Repository } from 'typeorm';
 import { Ingredient } from '../../frameworks/typeorm/entities/ingredients.entity';
 
@@ -9,35 +16,112 @@ export class IngredientsService {
     @InjectRepository(Ingredient) private repo: Repository<Ingredient>,
   ) {}
 
-  create(name: string) {
-    const count = 0;
-    const ingredient = this.repo.create({ name, count });
+  async create(body: CreateIngredientDTO) {
+    try {
+      const existing = await this.find({ name: body.name });
 
-    return this.repo.save(ingredient);
+      if (existing.data.ingredient.length) {
+        throw new BadRequestException(`Ingredient (${body.name}) exists`);
+      }
+
+      const created = this.repo.create(body);
+
+      const ingredient = await this.repo.save(created);
+
+      return {
+        message: `Ingredient (${created.name}) created successfully`,
+        data: {
+          ingredient,
+        },
+        status: HttpStatus.CREATED,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
-  find() {
-    return this.repo.find();
+  async find({ name }: { name: string }) {
+    try {
+      const ingredient = await this.repo.find({ where: { name } });
+      return {
+        message: 'Ingredient(s) retrieved successfully',
+        data: {
+          ingredient,
+        },
+        status: HttpStatus.FOUND,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
-  findOne(id: number) {
-    return this.repo.findOneBy({ id });
+  async findOne(id: number) {
+    try {
+      const ingredient = await this.repo.findOneBy({ id });
+
+      return {
+        message: 'Ingredient retrieved successfully',
+        data: {
+          ingredient,
+        },
+        status: HttpStatus.FOUND,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async update(id: number, body: Partial<Ingredient>) {
-    const ingredient = await this.findOne(id);
+    try {
+      const found = await this.findOne(id);
+      const {
+        data: { ingredient },
+      } = found;
 
-    if (!ingredient) throw new NotFoundException("Ingredient doesn't exist");
+      if (!ingredient) throw new NotFoundException("Ingredient doesn't exist");
 
-    Object.assign(ingredient, body);
+      Object.assign(ingredient, body);
 
-    return this.repo.save(ingredient);
+      await this.repo.save(ingredient);
+
+      return {
+        message: 'Ingredient updated successfully',
+        data: {
+          ingredient,
+        },
+        status: HttpStatus.ACCEPTED,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async delete(id: number) {
-    const ingredient = await this.findOne(id);
+    try {
+      const found = await this.findOne(id);
 
-    if (!ingredient) throw new NotFoundException("Ingredient doesn't exist");
-    return this.repo.remove(ingredient);
+      const {
+        data: { ingredient },
+      } = found;
+
+      if (!ingredient) throw new NotFoundException("Ingredient doesn't exist");
+
+      await this.repo.remove(ingredient);
+
+      return {
+        message: 'Ingredient deleted successfully',
+        data: {
+          ingredient,
+        },
+        status: HttpStatus.ACCEPTED,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }
