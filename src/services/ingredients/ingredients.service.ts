@@ -20,7 +20,7 @@ export class IngredientsService {
     try {
       const existing = await this.find({ name: body.name });
 
-      if (existing.data.ingredient.length) {
+      if (existing.data.length) {
         throw new BadRequestException(`Ingredient (${body.name}) exists`);
       }
 
@@ -43,13 +43,11 @@ export class IngredientsService {
 
   async find({ name }: { name: string }) {
     try {
-      const ingredient = await this.repo.find({ where: { name } });
+      const ingredients = await this.repo.find({ where: { name } });
       return {
         message: 'Ingredient(s) retrieved successfully',
-        data: {
-          ingredient,
-        },
-        status: HttpStatus.FOUND,
+        data: ingredients,
+        status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
