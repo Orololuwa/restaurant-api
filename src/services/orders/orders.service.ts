@@ -20,11 +20,7 @@ export class OrdersService {
       deliveryMethod: body.deliveryMethod,
     });
 
-    const ingredients = await this.orderedIngredientsService.create(
-      body.ingredients,
-    );
-
-    if (!order || !ingredients) {
+    if (!order) {
       return Promise.reject({
         message: 'Error creating order',
         error: 'BadRequest',
@@ -33,7 +29,9 @@ export class OrdersService {
       });
     }
 
-    order.ingredients = ingredients;
+    body.ingredients.map(async (ingredient) => {
+      await this.orderedIngredientsService.create(ingredient, order);
+    });
 
     order.user = user;
 
@@ -43,9 +41,7 @@ export class OrdersService {
 
     return {
       message: 'Order created successfully',
-      data: {
-        order,
-      },
+      data: order,
       status: HttpStatus.OK,
       state: ResponseState.SUCCESS,
     };
@@ -55,37 +51,32 @@ export class OrdersService {
     const orders = await this.repo
       .createQueryBuilder('orders')
       .where({ user })
-      .leftJoinAndSelect('orders.user', 'user')
+      .leftJoinAndSelect('orders.ingredients', 'ingredients')
       .select([
         'orders.id',
         'orders.price',
         'orders.deliveryMethod',
-        'user.id',
-        'user.name',
-        'user.email',
+        'ingredients.id',
+        'ingredients.count',
+        'ingredients.ingredient',
       ])
-      .leftJoinAndSelect('orders.ingredients', 'ingredients')
       .getMany();
     // .find({
     //   where: { user },
     //   relations: {
     //     ingredients: true,
-    //     user: true,
     //   },
-    // }
-    // );
+    // });
 
     return {
       message: 'Orders retrieved successfully',
-      data: {
-        orders: orders,
-      },
-      status: HttpStatus.FOUND,
+      data: orders,
+      status: HttpStatus.OK,
       state: ResponseState.SUCCESS,
     };
   }
 
-  async findOne(id: number) {
+  async findOne(id: string, user: User) {
     if (!id)
       return Promise.reject({
         message: 'Please provide a valid Id',
@@ -94,17 +85,23 @@ export class OrdersService {
         state: ResponseState.ERROR,
       });
 
-    const order = await this.repo.findOneBy({ id });
+    const order = await this.repo.findOne({
+      where: { id, user },
+    });
+
+    const ingredients: any = await this.orderedIngredientsService.find(order);
+
+    order.ingredients = ingredients;
 
     return {
       message: 'Order retrieved successfully',
-      data: { order },
+      data: order,
       status: HttpStatus.FOUND,
       state: ResponseState.SUCCESS,
     };
   }
 
-  async delete(id: number) {
+  async delete(id: string) {
     if (!id)
       return Promise.reject({
         message: 'Please provide a valid Id',
@@ -119,7 +116,7 @@ export class OrdersService {
 
     return {
       message: 'Order deleted successfully',
-      data: { order },
+      data: order,
       status: HttpStatus.OK,
       state: ResponseState.SUCCESS,
     };

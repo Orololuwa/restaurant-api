@@ -1,5 +1,5 @@
-import { IsNumber, IsString, IsEmail, IsObject } from 'class-validator';
-import { CreateOrderedIngredientDTO } from '../ordered-ingredients/ordered-ingredients.controller';
+import { IsNumber, IsString, IsArray } from 'class-validator';
+import { CreateOrderedIngredientDTO } from '../ordered-ingredients/ordered-ingredients.dto';
 
 export class CreateOrderDTO {
   @IsNumber()
@@ -8,6 +8,6 @@ export class CreateOrderDTO {
   @IsString()
   deliveryMethod: string;
 
-  @IsObject()
-  ingredients: CreateOrderedIngredientDTO;
+  @IsArray()
+  ingredients: CreateOrderedIngredientDTO[];
 }

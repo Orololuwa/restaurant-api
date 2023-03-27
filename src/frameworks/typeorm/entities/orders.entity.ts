@@ -2,17 +2,19 @@ import { OrderedIngredients } from 'src/frameworks/typeorm/entities/ordered-ingr
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+import { OrderModel } from '../models/orders.model';
 
 @Entity()
-export class Order {
+export class Order implements OrderModel {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column()
   price: number;
@@ -20,10 +22,15 @@ export class Order {
   @Column()
   deliveryMethod: string;
 
-  @OneToOne(() => OrderedIngredients)
-  @JoinColumn()
+  @OneToMany(() => OrderedIngredients, (ingredients) => ingredients.order)
   ingredients: OrderedIngredients;
 
   @ManyToOne(() => User, (user) => user.orders)
   user: User;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

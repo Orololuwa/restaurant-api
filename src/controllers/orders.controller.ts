@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { Serialize } from 'src/core/interceptors/serialize.inteceptor';
 import { CreateOrderDTO } from '../core/dtos/orders/create-order.dto';
 import { OrdersService } from 'src/services/orders/orders.service';
@@ -39,8 +48,23 @@ export class OrdersController {
     }
   }
 
+  @Get('/:id')
+  @auth(Role.User)
+  async getSingleOrder(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') id: string,
+  ) {
+    try {
+      const response = await this.ordersService.findOne(id, req.user as User);
+      return res.status(response.status).json(response);
+    } catch (error) {
+      res.status(error.status || 500).json(error);
+    }
+  }
+
   @Delete()
-  async deleteOrder(@Body() { id }: { id: number }, @Res() res: Response) {
+  async deleteOrder(@Body() { id }: { id: string }, @Res() res: Response) {
     try {
       const response = await this.ordersService.delete(id);
       return res.status(response.status).json(response);

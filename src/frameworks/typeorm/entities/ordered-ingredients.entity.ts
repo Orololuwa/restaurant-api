@@ -1,19 +1,23 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Order } from './orders.entity';
 
 @Entity()
 export class OrderedIngredients {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column({ default: 0 })
-  salad: number;
+  count: number;
 
-  @Column({ default: 0 })
-  bacon: number;
+  @Column()
+  ingredient: string;
 
-  @Column({ default: 0 })
-  cheese: number;
+  @ManyToOne(() => Order, (order) => order.ingredients)
+  order: Order;
 
-  @Column({ default: 0 })
-  meat: number;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
