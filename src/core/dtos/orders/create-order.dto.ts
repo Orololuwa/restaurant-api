@@ -1,4 +1,5 @@
-import { IsNumber, IsString, IsArray } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNumber, IsString, ValidateNested } from 'class-validator';
 import { CreateOrderedIngredientDTO } from '../ordered-ingredients/ordered-ingredients.dto';
 
 export class CreateOrderDTO {
@@ -8,6 +9,7 @@ export class CreateOrderDTO {
   @IsString()
   deliveryMethod: string;
 
-  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateOrderedIngredientDTO)
   ingredients: CreateOrderedIngredientDTO[];
 }
