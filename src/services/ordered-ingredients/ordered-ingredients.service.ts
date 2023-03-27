@@ -12,12 +12,29 @@ export class OrderedIngredientsService {
     private repo: Repository<OrderedIngredients>,
   ) {}
 
-  create(ingredients: Partial<CreateOrderedIngredientDTO>, order: Order) {
-    const orderedIngredient = this.repo.create(ingredients);
+  async create(ingredients: Partial<CreateOrderedIngredientDTO>, order: Order) {
+    try {
+      const orderedIngredient = this.repo.create(ingredients);
 
-    orderedIngredient.order = order;
+      orderedIngredient.order = order;
 
-    return this.repo.save(orderedIngredient);
+      return this.repo.save(orderedIngredient);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createBulk(ingredients: Partial<OrderedIngredients>[]) {
+    try {
+      const orderedIngredient = await this.repo
+        .createQueryBuilder()
+        .insert()
+        .into(OrderedIngredients)
+        .values(ingredients)
+        .execute();
+    } catch (error) {
+      throw error;
+    }
   }
 
   async find(order: Order) {

@@ -15,36 +15,40 @@ export class OrdersService {
   ) {}
 
   async create(body: CreateOrderDTO, user: User) {
-    const order = this.repo.create({
-      price: body.price,
-      deliveryMethod: body.deliveryMethod,
-    });
-
-    if (!order) {
-      return Promise.reject({
-        message: 'Error creating order',
-        error: 'BadRequest',
-        status: HttpStatus.BAD_REQUEST,
-        state: ResponseState.ERROR,
+    try {
+      const order = this.repo.create({
+        price: body.price,
+        deliveryMethod: body.deliveryMethod,
       });
+
+      if (!order) {
+        return Promise.reject({
+          message: 'Error creating order',
+          error: 'BadRequest',
+          status: HttpStatus.BAD_REQUEST,
+          state: ResponseState.ERROR,
+        });
+      }
+
+      order.user = user;
+
+      await this.repo.save(order);
+
+      body.ingredients.map(async (ingredient) => {
+        await this.orderedIngredientsService.create(ingredient, order);
+      });
+
+      delete order.user;
+
+      return {
+        message: 'Order created successfully',
+        data: order,
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
     }
-
-    body.ingredients.map(async (ingredient) => {
-      await this.orderedIngredientsService.create(ingredient, order);
-    });
-
-    order.user = user;
-
-    await this.repo.save(order);
-
-    delete order.user;
-
-    return {
-      message: 'Order created successfully',
-      data: order,
-      status: HttpStatus.OK,
-      state: ResponseState.SUCCESS,
-    };
   }
 
   async find(user: User) {
@@ -87,16 +91,15 @@ export class OrdersService {
 
     const order = await this.repo.findOne({
       where: { id, user },
+      relations: { ingredients: true },
     });
 
     const ingredients: any = await this.orderedIngredientsService.find(order);
 
-    order.ingredients = ingredients;
-
     return {
       message: 'Order retrieved successfully',
       data: order,
-      status: HttpStatus.FOUND,
+      status: HttpStatus.OK,
       state: ResponseState.SUCCESS,
     };
   }
