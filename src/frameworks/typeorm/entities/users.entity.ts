@@ -13,8 +13,8 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column()
-  address: string;
+  @Column({ nullable: true })
+  phone: string;
 
   @Column({ default: Role.User })
   role: string;

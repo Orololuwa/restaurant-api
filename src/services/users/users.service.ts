@@ -2,19 +2,15 @@ import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
-import { ResponseState, Role } from 'src/lib/helpers';
+import { ResponseState } from 'src/lib/helpers';
+import { OptionalQuery } from 'src/core/types';
+import { CreateUserDTO } from 'src/core/dtos/users/dto';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectRepository(User) private repo: Repository<User>) {}
 
-  create(body: {
-    name: string;
-    email: string;
-    address: string;
-    password?: string;
-    role?: Role;
-  }) {
+  create(body: CreateUserDTO) {
     const user = this.repo.create(body);
 
     return this.repo.save(user);
@@ -22,6 +18,10 @@ export class UsersService {
 
   async find(email: string) {
     return this.repo.find({ where: { email } });
+  }
+
+  async findOneWithField(field: OptionalQuery<User>) {
+    return this.repo.findOne({ where: field });
   }
 
   async findAll() {

@@ -94,8 +94,6 @@ export class OrdersService {
       relations: { ingredients: true },
     });
 
-    const ingredients: any = await this.orderedIngredientsService.find(order);
-
     return {
       message: 'Order retrieved successfully',
       data: order,

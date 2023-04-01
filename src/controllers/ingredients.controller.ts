@@ -13,12 +13,15 @@ import { UpdateIngredientCountDTO } from '../core/dtos/ingredients/update-ingred
 import { IngredientsService } from '../services/ingredients/ingredients.service';
 import { CreateIngredientDTO } from 'src/core/dtos/ingredients/create-ingredient.dto';
 import { Response } from 'express';
+import { auth } from 'src/core/decorators/auth.decorator';
+import { Role } from 'src/lib/helpers';
 
 @Controller('ingredients')
 export class IngredientsController {
   constructor(private ingredientsService: IngredientsService) {}
 
   @Get()
+  @auth(Role.User)
   async getAllIngredients(
     @Query() query: { name: string },
     @Res() res: Response,

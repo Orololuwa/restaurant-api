@@ -1,4 +1,3 @@
-import { IngredientType } from 'src/lib/helpers/ingredients';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

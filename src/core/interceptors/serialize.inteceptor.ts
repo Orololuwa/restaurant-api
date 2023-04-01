@@ -15,7 +15,7 @@ export class SerializeInterceptor implements NestInterceptor {
   constructor(private dto: any) {}
 
   intercept(
-    context: ExecutionContext,
+    _context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> {
     return next.handle().pipe(
@@ -23,7 +23,6 @@ export class SerializeInterceptor implements NestInterceptor {
         return plainToInstance(this.dto, data, {
           excludeExtraneousValues: true,
           enableImplicitConversion: true,
-          
         });
       }),
     );

@@ -26,7 +26,7 @@ export class OrderedIngredientsService {
 
   async createBulk(ingredients: Partial<OrderedIngredients>[]) {
     try {
-      const orderedIngredient = await this.repo
+      await this.repo
         .createQueryBuilder()
         .insert()
         .into(OrderedIngredients)

@@ -4,7 +4,6 @@ import {
   Get,
   HttpStatus,
   Param,
-  Query,
   Res,
 } from '@nestjs/common';
 import { Serialize } from 'src/core/interceptors/serialize.inteceptor';

@@ -18,21 +18,6 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async createUser(body: CreateUserDTO) {
-    const [existingUser] = await this.usersService.find(body.email);
-
-    if (existingUser) {
-      throw new BadRequestException('Email in use!');
-    }
-
-    const user = await this.usersService.create({
-      ...body,
-      password: await createHash(body.password),
-    });
-
-    return user;
-  }
-
   async validateUser(email: string, pass: string) {
     const [user] = await this.usersService.find(email);
 
@@ -59,28 +44,37 @@ export class AuthService {
   }
 
   async signUp(body: CreateUserDTO) {
-    const { email, password, address, name, role } = body;
-    const [existingUser] = await this.usersService.find(email);
+    try {
+      const { email, phone, password, ...rest } = body;
+      const [emailExisting, phoneExisting] = await Promise.all([
+        this.usersService.findOneWithField({ email }),
+        this.usersService.findOneWithField({ phone }),
+      ]);
 
-    if (existingUser) {
-      throw new BadRequestException('Email in use!');
+      if (emailExisting) {
+        throw new BadRequestException('Email in use!');
+      }
+      if (phoneExisting) {
+        throw new BadRequestException('Phone no in use!');
+      }
+
+      const isPasswordValidated = isPasswordValid(password);
+
+      if (!isPasswordValidated) {
+        throw new BadRequestException('Password Invalid!');
+      }
+
+      const user = await this.usersService.create({
+        email,
+        phone,
+        password: await createHash(password),
+        ...rest,
+      });
+
+      return this.signIn({ email: user.email, password });
+    } catch (error) {
+      throw error;
     }
-
-    const isPasswordValidated = isPasswordValid(password);
-
-    if (!isPasswordValidated) {
-      throw new BadRequestException('Password Invalid!');
-    }
-
-    const user = await this.usersService.create({
-      email,
-      password: await createHash(password),
-      address,
-      name,
-      role,
-    });
-
-    return this.signIn({ email: user.email, password });
   }
 
   async signIn(body: { email: string; password: string }) {

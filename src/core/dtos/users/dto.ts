@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString, IsPhoneNumber } from 'class-validator';
 import { Role } from 'src/lib/helpers';
 
 export class CreateUserDTO {
@@ -9,8 +9,8 @@ export class CreateUserDTO {
   @IsEmail()
   email: string;
 
-  @IsString()
-  address: string;
+  @IsPhoneNumber()
+  phone: string;
 
   @IsString()
   password: string;
@@ -28,6 +28,9 @@ export class UserDTO {
 
   @Expose()
   email: string;
+
+  @Expose()
+  phone: string;
 
   @Expose()
   role: Role;
