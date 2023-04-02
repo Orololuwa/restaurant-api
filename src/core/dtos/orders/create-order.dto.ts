@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsNumber, IsString, ValidateNested } from 'class-validator';
-import { CreateOrderedIngredientDTO } from '../ordered-ingredients/ordered-ingredients.dto';
+import { CreateMenuItemPurchaseDTO } from '../menu-item-purchase/menu-item-purchase';
 
 export class CreateOrderDTO {
   @IsNumber()
@@ -10,6 +10,6 @@ export class CreateOrderDTO {
   deliveryMethod: string;
 
   @ValidateNested({ each: true })
-  @Type(() => CreateOrderedIngredientDTO)
-  ingredients: CreateOrderedIngredientDTO[];
+  @Type(() => CreateMenuItemPurchaseDTO)
+  ingredients: CreateMenuItemPurchaseDTO[];
 }

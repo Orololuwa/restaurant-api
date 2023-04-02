@@ -1,5 +1,5 @@
 import { Expose, Transform } from 'class-transformer';
-import { OrderedIngredients } from 'src/frameworks/typeorm/entities/ordered-ingredients.entity';
+import { MenuItemPurchase } from 'src/frameworks/typeorm/entities/menu-item-purchase.entity';
 
 export class OrderDTO {
   @Expose()
@@ -12,6 +12,6 @@ export class OrderDTO {
   deliveryMethod: string;
 
   @Expose()
-  @Transform(({ obj }) => obj.ingredients)
-  ingredients: OrderedIngredients;
+  @Transform(({ obj }) => obj.menuItem)
+  menuItem: MenuItemPurchase;
 }

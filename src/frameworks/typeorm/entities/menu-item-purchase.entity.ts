@@ -1,8 +1,15 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Order } from './orders.entity';
 
 @Entity()
-export class OrderedIngredients {
+export class MenuItemPurchase {
   @PrimaryGeneratedColumn()
   id: string;
 
@@ -12,7 +19,7 @@ export class OrderedIngredients {
   @Column()
   ingredient: string;
 
-  @ManyToOne(() => Order, (order) => order.ingredients)
+  @ManyToOne(() => Order, (order) => order.menuItem)
   order: Order;
 
   @CreateDateColumn()

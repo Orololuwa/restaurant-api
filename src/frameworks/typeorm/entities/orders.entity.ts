@@ -1,4 +1,4 @@
-import { OrderedIngredients } from 'src/frameworks/typeorm/entities/ordered-ingredients.entity';
+import { MenuItemPurchase } from 'src/frameworks/typeorm/entities/menu-item-purchase.entity';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import {
   Column,
@@ -22,8 +22,8 @@ export class Order implements OrderModel {
   @Column()
   deliveryMethod: string;
 
-  @OneToMany(() => OrderedIngredients, (ingredients) => ingredients.order)
-  ingredients: OrderedIngredients;
+  @OneToMany(() => MenuItemPurchase, (menuItem) => menuItem.order)
+  menuItem: MenuItemPurchase;
 
   @ManyToOne(() => User, (user) => user.orders)
   user: User;

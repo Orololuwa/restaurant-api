@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { OrderedIngredientsService } from 'src/services/ordered-ingredients/ordered-ingredients.service';
+import { MenuItemPurchaseService } from 'src/services/menu-item-purchase/menu-item-purchase.service';
 import { Repository } from 'typeorm';
 import { CreateOrderDTO } from 'src/core/dtos/orders/create-order.dto';
 import { Order } from 'src/frameworks/typeorm/entities/orders.entity';
@@ -11,7 +11,7 @@ import { ResponseState } from 'src/lib/helpers';
 export class OrdersService {
   constructor(
     @InjectRepository(Order) private repo: Repository<Order>,
-    private orderedIngredientsService: OrderedIngredientsService,
+    private menuItemPurchaseService: MenuItemPurchaseService,
   ) {}
 
   async create(body: CreateOrderDTO, user: User) {
@@ -34,8 +34,8 @@ export class OrdersService {
 
       await this.repo.save(order);
 
-      body.ingredients.map(async (ingredient) => {
-        await this.orderedIngredientsService.create(ingredient, order);
+      body.ingredients.map(async (menuItem) => {
+        await this.menuItemPurchaseService.create(menuItem, order);
       });
 
       delete order.user;
@@ -55,20 +55,20 @@ export class OrdersService {
     const orders = await this.repo
       .createQueryBuilder('orders')
       .where({ user })
-      .leftJoinAndSelect('orders.ingredients', 'ingredients')
+      .leftJoinAndSelect('orders.menuItem', 'menuItem')
       .select([
         'orders.id',
         'orders.price',
         'orders.deliveryMethod',
-        'ingredients.id',
-        'ingredients.count',
-        'ingredients.ingredient',
+        'menuItem.id',
+        'menuItem.count',
+        'menuItem.ingredient',
       ])
       .getMany();
     // .find({
     //   where: { user },
     //   relations: {
-    //     ingredients: true,
+    //     menuItem: true,
     //   },
     // });
 
@@ -91,7 +91,7 @@ export class OrdersService {
 
     const order = await this.repo.findOne({
       where: { id, user },
-      relations: { ingredients: true },
+      relations: { menuItem: true },
     });
 
     return {

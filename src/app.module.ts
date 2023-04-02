@@ -8,7 +8,7 @@ import { dataSourceOptions } from 'db/data-source';
 import { UsersModule } from './services/users/users.module';
 import { AuthModule } from './services/auth/auth.module';
 import { OrdersModule } from './services/orders/orders.module';
-import { OrderedIngredientsModule } from './services/ordered-ingredients/ordered-ingredients.module';
+import { MenuItemPurchaseModule } from './services/menu-item-purchase/menu-item-purchase.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './core/guards/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
@@ -34,7 +34,7 @@ declare global {
     UsersModule,
     AuthModule,
     OrdersModule,
-    OrderedIngredientsModule,
+    MenuItemPurchaseModule,
     JwtModule.register({
       secret: JWT_CONSTANT.secret,
       signOptions: { expiresIn: `${JWT_CONSTANT.expiration}s` },

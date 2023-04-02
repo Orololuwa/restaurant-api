@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { OrderedIngredientsModule } from 'src/services/ordered-ingredients/ordered-ingredients.module';
+import { MenuItemPurchaseModule } from 'src/services/menu-item-purchase/menu-item-purchase.module';
 import { UsersModule } from 'src/services/users/users.module';
 import { OrdersController } from '../../controllers/orders.controller';
 import { Order } from '../../frameworks/typeorm/entities/orders.entity';
@@ -10,7 +10,7 @@ import { OrdersService } from 'src/services/orders/orders.service';
   imports: [
     TypeOrmModule.forFeature([Order]),
     UsersModule,
-    OrderedIngredientsModule,
+    MenuItemPurchaseModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],
