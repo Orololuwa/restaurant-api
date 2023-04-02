@@ -20,7 +20,7 @@ export class UsersService {
     return this.repo.find({ where: { email } });
   }
 
-  async findOneWithField(field: OptionalQuery<User>) {
+  async findOneWith(field: OptionalQuery<User>) {
     return this.repo.findOne({ where: field });
   }
 

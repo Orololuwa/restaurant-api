@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { OrderModel } from '../models/orders.model';
+import { DeliveryDetails } from './delivery-details.entity';
 
 @Entity()
 export class Order implements OrderModel {
@@ -22,6 +23,12 @@ export class Order implements OrderModel {
   @Column()
   deliveryMethod: string;
 
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
   @OneToMany(
     () => MenuItemPurchase,
     (menuItemPurchase) => menuItemPurchase.order,
@@ -31,9 +38,6 @@ export class Order implements OrderModel {
   @ManyToOne(() => User, (user) => user.orders)
   user: User;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @ManyToOne(() => DeliveryDetails, (deliveryDetails) => deliveryDetails.order)
+  deliveryDetails: DeliveryDetails;
 }

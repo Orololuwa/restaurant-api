@@ -47,8 +47,8 @@ export class AuthService {
     try {
       const { email, phone, password, ...rest } = body;
       const [emailExisting, phoneExisting] = await Promise.all([
-        this.usersService.findOneWithField({ email }),
-        this.usersService.findOneWithField({ phone }),
+        this.usersService.findOneWith({ email }),
+        this.usersService.findOneWith({ phone }),
       ]);
 
       if (emailExisting) {

@@ -2,9 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Order } from './orders.entity';
+import { User } from './users.entity';
 
 @Entity()
 export class DeliveryDetails {
@@ -15,18 +19,18 @@ export class DeliveryDetails {
   houseNumber: string;
 
   @Column()
-  street: number;
+  street: string;
 
   @Column()
-  city: number;
+  city: string;
 
   @Column()
-  state: number;
+  state: string;
 
   @Column()
   zipCode: number;
 
-  @Column({ default: false })
+  @Column({ default: true })
   primaryAddress: boolean;
 
   @CreateDateColumn()
@@ -34,4 +38,10 @@ export class DeliveryDetails {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.deliveryDetails)
+  user: User;
+
+  @OneToMany(() => Order, (order) => order.deliveryDetails)
+  order: Order;
 }

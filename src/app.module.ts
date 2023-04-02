@@ -13,6 +13,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './core/guards/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { JWT_CONSTANT } from 'src/lib/config/app.config';
+import { DeliveryDetailsModule } from './services/delivery-details/delivery-details.module';
 const cookieSession = require('cookie-session');
 
 declare global {
@@ -35,6 +36,7 @@ declare global {
     AuthModule,
     OrdersModule,
     MenuItemPurchaseModule,
+    DeliveryDetailsModule,
     JwtModule.register({
       secret: JWT_CONSTANT.secret,
       signOptions: { expiresIn: `${JWT_CONSTANT.expiration}s` },

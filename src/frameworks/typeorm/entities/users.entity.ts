@@ -1,6 +1,7 @@
 import { Order } from 'src/frameworks/typeorm/entities/orders.entity';
 import { Role } from 'src/lib/helpers';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { DeliveryDetails } from './delivery-details.entity';
 
 @Entity()
 export class User {
@@ -24,4 +25,7 @@ export class User {
 
   @OneToMany(() => Order, (orders) => orders.user)
   orders: Order[];
+
+  @OneToMany(() => DeliveryDetails, (deliveryDetails) => deliveryDetails.user)
+  deliveryDetails: DeliveryDetails;
 }
