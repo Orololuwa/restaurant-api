@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsPositive } from 'class-validator';
 import { IngredientType } from 'src/lib/helpers/ingredients';
 
-export class CreateIngredientDTO {
+export class CreateMenuItemDTO {
   @IsEnum(IngredientType)
   name: IngredientType;
 

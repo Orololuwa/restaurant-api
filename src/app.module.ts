@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { IngredientsModule } from './services/ingredients/ingredients.module';
+import { MenuItemModule } from './services/menu-item/menu-item.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dataSourceOptions } from 'db/data-source';
@@ -30,7 +30,7 @@ declare global {
       envFilePath: `.env`,
     }),
     TypeOrmModule.forRoot(dataSourceOptions),
-    IngredientsModule,
+    MenuItemModule,
     UsersModule,
     AuthModule,
     OrdersModule,
