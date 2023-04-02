@@ -1,6 +1,6 @@
 import { IsNumber, IsString } from 'class-validator';
 
-export class CreateDeliveryDetailsDTO {
+export class CreateAddressDTO {
   @IsString()
   houseNumber: string;
 

@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { OrderModel } from '../models/orders.model';
-import { DeliveryDetails } from './delivery-details.entity';
+import { Address } from './address.entity';
 
 @Entity()
 export class Order implements OrderModel {
@@ -38,6 +38,6 @@ export class Order implements OrderModel {
   @ManyToOne(() => User, (user) => user.orders)
   user: User;
 
-  @ManyToOne(() => DeliveryDetails, (deliveryDetails) => deliveryDetails.order)
-  deliveryDetails: DeliveryDetails;
+  @ManyToOne(() => Address, (address) => address.order)
+  address: Address;
 }

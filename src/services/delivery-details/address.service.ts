@@ -1,19 +1,19 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateDeliveryDetailsDTO } from 'src/core/dtos/delivery-details/create-delivery.dto';
+import { CreateAddressDTO } from 'src/core/dtos/address/create-address.dto';
 import { OptionalQuery } from 'src/core/types';
-import { DeliveryDetails } from 'src/frameworks/typeorm/entities/delivery-details.entity';
+import { Address } from 'src/frameworks/typeorm/entities/address.entity';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import { ResponseState } from 'src/lib/helpers';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class DeliveryDetailsService {
+export class AddressService {
   constructor(
-    @InjectRepository(DeliveryDetails)
-    private repo: Repository<DeliveryDetails>,
+    @InjectRepository(Address)
+    private repo: Repository<Address>,
   ) {}
-  async create(body: CreateDeliveryDetailsDTO, user: User) {
+  async create(body: CreateAddressDTO, user: User) {
     try {
       console.log(body);
 
@@ -34,7 +34,7 @@ export class DeliveryDetailsService {
       return {
         message: 'Address created successfully',
         data: newPrimaryAddress,
-        status: HttpStatus.FOUND,
+        status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
@@ -42,13 +42,13 @@ export class DeliveryDetailsService {
     }
   }
 
-  async findOneWith(field: OptionalQuery<DeliveryDetails>) {
+  async findOneWith(field: OptionalQuery<Address>) {
     try {
       const address = await this.repo.findOne({ where: field });
       return {
         message: 'Address retrieved successfully',
         data: address,
-        status: HttpStatus.FOUND,
+        status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
@@ -63,7 +63,7 @@ export class DeliveryDetailsService {
       return {
         message: 'Addresses retrieved successfully',
         data: addresses,
-        status: HttpStatus.FOUND,
+        status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };
     } catch (error) {

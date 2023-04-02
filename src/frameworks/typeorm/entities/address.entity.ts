@@ -11,7 +11,7 @@ import { Order } from './orders.entity';
 import { User } from './users.entity';
 
 @Entity()
-export class DeliveryDetails {
+export class Address {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -39,9 +39,9 @@ export class DeliveryDetails {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.deliveryDetails)
+  @ManyToOne(() => User, (user) => user.address)
   user: User;
 
-  @OneToMany(() => Order, (order) => order.deliveryDetails)
+  @OneToMany(() => Order, (order) => order.address)
   order: Order;
 }
