@@ -11,16 +11,22 @@ import { Order } from './orders.entity';
 @Entity()
 export class MenuItemPurchase {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column({ default: 0 })
-  count: number;
+  quantity: number;
 
   @Column()
-  ingredient: string;
+  menuItem: string;
 
-  @ManyToOne(() => Order, (order) => order.menuItem)
+  @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
+  pricePurchased: number;
+
+  @ManyToOne(() => Order, (order) => order.menuItemPurchase)
   order: Order;
+
+  @Column()
+  packNumber: number;
 
   @CreateDateColumn()
   createdAt: Date;

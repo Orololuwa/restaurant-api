@@ -12,11 +12,15 @@ export class MenuItemPurchaseService {
     private repo: Repository<MenuItemPurchase>,
   ) {}
 
-  async create(menuItem: Partial<CreateMenuItemPurchaseDTO>, order: Order) {
+  async create(body: Partial<CreateMenuItemPurchaseDTO>, order: Order) {
     try {
-      const menuItemPurchase = this.repo.create(menuItem);
+      const menuItemPurchase = this.repo.create({
+        ...body,
+      });
 
       menuItemPurchase.order = order;
+
+      console.log(menuItemPurchase);
 
       return this.repo.save(menuItemPurchase);
     } catch (error) {

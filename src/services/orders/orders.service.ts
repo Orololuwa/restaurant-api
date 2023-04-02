@@ -55,20 +55,20 @@ export class OrdersService {
     const orders = await this.repo
       .createQueryBuilder('orders')
       .where({ user })
-      .leftJoinAndSelect('orders.menuItem', 'menuItem')
+      .leftJoinAndSelect('orders.menuItemPurchase', 'menuItemPurchase')
       .select([
         'orders.id',
         'orders.price',
         'orders.deliveryMethod',
-        'menuItem.id',
-        'menuItem.count',
-        'menuItem.ingredient',
+        'menuItemPurchase.id',
+        'menuItemPurchase.quantity',
+        'menuItemPurchase.menuItem',
       ])
       .getMany();
     // .find({
     //   where: { user },
     //   relations: {
-    //     menuItem: true,
+    //     menuItemPurchase: true,
     //   },
     // });
 
@@ -81,25 +81,37 @@ export class OrdersService {
   }
 
   async findOne(id: string, user: User) {
-    if (!id)
-      return Promise.reject({
-        message: 'Please provide a valid Id',
-        error: 'NotFound',
-        status: HttpStatus.NOT_FOUND,
-        state: ResponseState.ERROR,
+    try {
+      if (!id)
+        return Promise.reject({
+          message: 'Please provide a valid Id',
+          error: 'NotFound',
+          status: HttpStatus.NOT_FOUND,
+          state: ResponseState.ERROR,
+        });
+
+      const order = await this.repo.findOne({
+        where: { id, user },
+        relations: { menuItemPurchase: true },
       });
 
-    const order = await this.repo.findOne({
-      where: { id, user },
-      relations: { menuItem: true },
-    });
+      if (!order)
+        return Promise.reject({
+          message: 'Order not found',
+          error: 'NotFound',
+          status: HttpStatus.NOT_FOUND,
+          state: ResponseState.ERROR,
+        });
 
-    return {
-      message: 'Order retrieved successfully',
-      data: order,
-      status: HttpStatus.OK,
-      state: ResponseState.SUCCESS,
-    };
+      return {
+        message: 'Order retrieved successfully',
+        data: order,
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async delete(id: string) {

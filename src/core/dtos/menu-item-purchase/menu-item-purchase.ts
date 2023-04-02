@@ -3,8 +3,14 @@ import { IngredientType } from 'src/lib/helpers/ingredients';
 
 export class CreateMenuItemPurchaseDTO {
   @IsEnum(IngredientType)
-  ingredient: IngredientType;
+  menuItem: IngredientType;
 
   @IsNumber()
-  count: number;
+  quantity: number;
+
+  @IsNumber()
+  packNumber: number;
+
+  @IsNumber()
+  pricePurchased: number;
 }

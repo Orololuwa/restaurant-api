@@ -22,8 +22,11 @@ export class Order implements OrderModel {
   @Column()
   deliveryMethod: string;
 
-  @OneToMany(() => MenuItemPurchase, (menuItem) => menuItem.order)
-  menuItem: MenuItemPurchase;
+  @OneToMany(
+    () => MenuItemPurchase,
+    (menuItemPurchase) => menuItemPurchase.order,
+  )
+  menuItemPurchase: MenuItemPurchase;
 
   @ManyToOne(() => User, (user) => user.orders)
   user: User;
