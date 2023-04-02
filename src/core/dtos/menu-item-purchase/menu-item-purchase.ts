@@ -1,9 +1,8 @@
-import { IsEnum, IsNumber } from 'class-validator';
-import { IngredientType } from 'src/lib/helpers/ingredients';
+import { IsNumber } from 'class-validator';
 
 export class CreateMenuItemPurchaseDTO {
-  @IsEnum(IngredientType)
-  menuItem: IngredientType;
+  @IsNumber()
+  menuItemId: number;
 
   @IsNumber()
   quantity: number;

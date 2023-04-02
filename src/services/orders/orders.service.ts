@@ -92,7 +92,7 @@ export class OrdersService {
 
       const order = await this.repo.findOne({
         where: { id, user },
-        relations: { menuItemPurchase: true },
+        relations: { menuItemPurchase: { menuItem: true } },
       });
 
       if (!order)

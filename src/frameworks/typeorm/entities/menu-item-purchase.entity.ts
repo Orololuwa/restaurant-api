@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { MenuItem } from './menu-item.entity';
 import { Order } from './orders.entity';
 
 @Entity()
@@ -16,8 +17,8 @@ export class MenuItemPurchase {
   @Column({ default: 0 })
   quantity: number;
 
-  @Column()
-  menuItem: string;
+  @ManyToOne(() => MenuItem, (menuItem) => menuItem.menuItemPurchase)
+  menuItem: MenuItem;
 
   @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
   pricePurchased: number;
