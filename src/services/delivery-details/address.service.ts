@@ -15,10 +15,9 @@ export class AddressService {
   ) {}
   async create(body: CreateAddressDTO, user: User) {
     try {
-      console.log(body);
-
-      const primaryAddress = (await this.findOneWith({ primaryAddress: true }))
-        .data;
+      const primaryAddress = (
+        await this.findOneWith({ primaryAddress: true, user })
+      ).data;
 
       if (primaryAddress) {
         primaryAddress.primaryAddress = false;
@@ -26,14 +25,44 @@ export class AddressService {
         await this.repo.save(primaryAddress);
       }
 
-      const newAddress = this.repo.create(body);
-      newAddress.user = user;
+      const newPrimaryAddress = this.repo.create(body);
+      newPrimaryAddress.user = user;
 
-      const newPrimaryAddress = await this.repo.save(newAddress);
+      const address = await this.repo.save(newPrimaryAddress);
+
+      delete address.user;
 
       return {
         message: 'Address created successfully',
-        data: newPrimaryAddress,
+        data: address,
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updatePrimary(id: number, user: User) {
+    try {
+      const primaryAddress = (
+        await this.findOneWith({ primaryAddress: true, user })
+      ).data;
+
+      if (primaryAddress) {
+        primaryAddress.primaryAddress = false;
+
+        await this.repo.save(primaryAddress);
+      }
+
+      const newPrimaryAddress = (await this.findOneWith({ id })).data;
+      newPrimaryAddress.primaryAddress = true;
+
+      const address = await this.repo.save(newPrimaryAddress);
+
+      return {
+        message: 'Address created successfully',
+        data: address,
         status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };

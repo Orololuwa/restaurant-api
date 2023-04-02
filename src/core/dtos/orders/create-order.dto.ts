@@ -12,4 +12,7 @@ export class CreateOrderDTO {
   @ValidateNested({ each: true })
   @Type(() => CreateMenuItemPurchaseDTO)
   ingredients: CreateMenuItemPurchaseDTO[];
+
+  @IsNumber()
+  addressId: number;
 }

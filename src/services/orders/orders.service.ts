@@ -6,20 +6,20 @@ import { CreateOrderDTO } from 'src/core/dtos/orders/create-order.dto';
 import { Order } from 'src/frameworks/typeorm/entities/orders.entity';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import { ResponseState } from 'src/lib/helpers';
+import { AddressService } from '../delivery-details/address.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(Order) private repo: Repository<Order>,
     private menuItemPurchaseService: MenuItemPurchaseService,
+    private addressService: AddressService,
   ) {}
 
   async create(body: CreateOrderDTO, user: User) {
     try {
-      const order = this.repo.create({
-        price: body.price,
-        deliveryMethod: body.deliveryMethod,
-      });
+      const { ingredients, addressId, ...rest } = body;
+      const order = this.repo.create(rest);
 
       if (!order) {
         return Promise.reject({
@@ -30,11 +30,15 @@ export class OrdersService {
         });
       }
 
+      const address = (await this.addressService.updatePrimary(addressId, user))
+        .data;
+
+      order.address = address;
       order.user = user;
 
       await this.repo.save(order);
 
-      body.ingredients.map(async (menuItem) => {
+      ingredients.map(async (menuItem) => {
         await this.menuItemPurchaseService.create(menuItem, order);
       });
 
@@ -92,7 +96,7 @@ export class OrdersService {
 
       const order = await this.repo.findOne({
         where: { id, user },
-        relations: { menuItemPurchase: { menuItem: true } },
+        relations: { menuItemPurchase: { menuItem: true }, address: true },
       });
 
       if (!order)
