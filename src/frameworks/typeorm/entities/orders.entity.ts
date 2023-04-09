@@ -20,7 +20,7 @@ export class Order implements OrderModel {
   @Column()
   price: number;
 
-  @Column()
+  @Column({ nullable: true })
   deliveryMethod: string;
 
   @CreateDateColumn()

@@ -7,6 +7,7 @@ import { Order } from 'src/frameworks/typeorm/entities/orders.entity';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import { ResponseState } from 'src/lib/helpers';
 import { AddressService } from '../delivery-details/address.service';
+import { OptionalQuery } from 'src/core/types';
 
 @Injectable()
 export class OrdersService {
@@ -55,33 +56,67 @@ export class OrdersService {
     }
   }
 
-  async find(user: User) {
-    const orders = await this.repo
-      .createQueryBuilder('orders')
-      .where({ user })
-      .leftJoinAndSelect('orders.menuItemPurchase', 'menuItemPurchase')
-      .select([
-        'orders.id',
-        'orders.price',
-        'orders.deliveryMethod',
-        'menuItemPurchase.id',
-        'menuItemPurchase.quantity',
-        'menuItemPurchase.menuItem',
-      ])
-      .getMany();
-    // .find({
-    //   where: { user },
-    //   relations: {
-    //     menuItemPurchase: true,
-    //   },
-    // });
+  async find(
+    user: User,
+    query: OptionalQuery<Order> & { page?: number; perpage?: number },
+  ) {
+    const page = +query.page || 1;
+    const perpage = +query.perpage || 10;
 
-    return {
-      message: 'Orders retrieved successfully',
-      data: orders,
-      status: HttpStatus.OK,
-      state: ResponseState.SUCCESS,
-    };
+    const excludedFields = ['page', 'perpage'];
+    excludedFields.forEach((el) => delete query[el]);
+
+    try {
+      const orders = await this.repo
+        .createQueryBuilder('orders')
+        .where({ user, ...query })
+        .orderBy('orders.createdAt', 'DESC')
+        .leftJoinAndSelect('orders.menuItemPurchase', 'menuItemPurchase')
+        .leftJoinAndSelect('menuItemPurchase.menuItem', 'menuItem')
+        .select([
+          'orders.id',
+          'orders.price',
+          'orders.createdAt',
+          'orders.deliveryMethod',
+          'menuItemPurchase.id',
+          'menuItemPurchase.quantity',
+          'menuItemPurchase.pricePurchased',
+          'menuItemPurchase.packNumber',
+          'menuItem.id',
+          'menuItem.name',
+        ])
+        .take(perpage)
+        .skip(page * perpage - perpage)
+        .getMany();
+      // .find({
+      //   where: { user, ...query },
+      //   relations: {
+      //     menuItemPurchase: { menuItem: true },
+      //   },
+      // });
+
+      const total = await this.repo.count({ where: { user } });
+      const pagination = {
+        hasPrevious: page > 1,
+        prevPage: page - 1,
+        hasNext: page < Math.ceil(total / perpage),
+        next: page + 1,
+        currentPage: Number(page),
+        pageSize: perpage,
+        lastPage: Math.ceil(total / perpage),
+        total,
+      };
+
+      return {
+        message: 'Orders retrieved successfully',
+        data: orders,
+        pagination,
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async findOne(id: string, user: User) {

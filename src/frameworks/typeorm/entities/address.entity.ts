@@ -27,6 +27,9 @@ export class Address {
   @Column()
   state: string;
 
+  @Column({ default: 'Nigeria' })
+  country: string;
+
   @Column()
   zipCode: number;
 

@@ -13,6 +13,9 @@ export class CreateAddressDTO {
   @IsString()
   state: string;
 
+  @IsString()
+  country: string;
+
   @IsNumber()
   zipCode: number;
 }
