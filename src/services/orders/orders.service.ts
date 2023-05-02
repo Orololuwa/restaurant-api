@@ -71,6 +71,7 @@ export class OrdersService {
         .createQueryBuilder('orders')
         .where({ user, ...query })
         .orderBy('orders.createdAt', 'DESC')
+        .leftJoinAndSelect('orders.address', 'address')
         .leftJoinAndSelect('orders.menuItemPurchase', 'menuItemPurchase')
         .leftJoinAndSelect('menuItemPurchase.menuItem', 'menuItem')
         .select([
@@ -84,6 +85,7 @@ export class OrdersService {
           'menuItemPurchase.packNumber',
           'menuItem.id',
           'menuItem.name',
+          'address',
         ])
         .take(perpage)
         .skip(page * perpage - perpage)

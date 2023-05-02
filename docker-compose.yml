@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  burger-builder:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - '1998:${PORT}'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - burger-builder-db
+
+  burger-builder-db:
+    image: bitnami/mariadb:latest
+    container_name: burger-builder-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_DATABASE=burger_builder
+      - 'MARIADB_USER=${DB_USERNAME}'
+      - 'MARIADB_PASSWORD=${DB_PASSWORD}'
+      - 'MARIADB_ROOT_PASSWORD=${DB_PASSWORD}'
+    volumes:
+      - mariadb-data:/bitnami/mariadb
+    ports:
+      - 3309:3306
+
+  # db:
+  #   platform: linux/x86_64
+  #   image: mysql:5.7.22
+  #   restart: always
+  #   # restart: unless-stopped
+  #   environment:
+  #     MYSQL_DATABASE: ambassador
+  #     MYSQL_USER: root
+  #     MYSQL_PASSWORD: root
+  #     MYSQL_ROOT_PASSWORD: root
+  #   volumes:
+  #     - .dbdata:/var/lib/mysql
+  #   ports:
+  #     - 3306:3306
+  #   # command: --default-authentication-plugin=mysql_native_password
+  #   # extra_hosts:
+  #   #   - 'host.docker.internal:172.17.0.1'
+
+  # redis:
+  #   image: redis
+  #   ports:
+  #     - 6379:6379
+
+volumes:
+  mariadb-data:

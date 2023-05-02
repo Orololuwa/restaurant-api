@@ -27,7 +27,8 @@ export class UsersService {
   async findAll() {
     const users = await this.repo
       .createQueryBuilder('user')
-      .select(['user.id', 'user.name', 'user.email', 'user.address'])
+      .leftJoinAndSelect('user.address', 'address')
+      .select(['user.id', 'user.name', 'user.email', 'address'])
       .getMany();
 
     return {
