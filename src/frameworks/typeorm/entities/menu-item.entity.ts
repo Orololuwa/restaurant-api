@@ -16,6 +16,12 @@ export class MenuItem {
   @Column()
   name: string;
 
+  @Column({ type: 'longtext' })
+  image: string;
+
+  @Column({ type: 'longtext' })
+  description: string;
+
   @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
   price: number;
 
