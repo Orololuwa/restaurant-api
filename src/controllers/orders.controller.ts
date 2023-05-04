@@ -21,7 +21,6 @@ import { Order } from 'src/frameworks/typeorm/entities/orders.entity';
 import { OptionalQuery } from 'src/core/types';
 
 @Controller('orders')
-@Serialize(OrderDTO)
 export class OrdersController {
   constructor(private ordersService: OrdersService) {}
 
@@ -40,11 +39,12 @@ export class OrdersController {
     }
   }
 
+  @Serialize(OrderDTO)
   @Get()
   @auth(Role.User)
   async getAllOrders(
     @Req() req: Request,
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
     @Query() query: OptionalQuery<Order> & { page?: number; perpage?: number },
   ) {
     try {

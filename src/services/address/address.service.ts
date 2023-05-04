@@ -95,7 +95,6 @@ export class AddressService {
         status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };
-    } catch (error) { 
-    }
+    } catch (error) {}
   }
 }

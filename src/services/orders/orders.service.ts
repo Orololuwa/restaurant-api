@@ -6,7 +6,7 @@ import { CreateOrderDTO } from 'src/core/dtos/orders/create-order.dto';
 import { Order } from 'src/frameworks/typeorm/entities/orders.entity';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import { ResponseState } from 'src/lib/helpers';
-import { AddressService } from '../delivery-details/address.service';
+import { AddressService } from '../address/address.service';
 import { OptionalQuery } from 'src/core/types';
 
 @Injectable()

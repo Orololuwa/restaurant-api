@@ -13,7 +13,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './core/guards/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { JWT_CONSTANT } from 'src/lib/config/app.config';
-import { AddressModule } from './services/delivery-details/address.module';
+import { AddressModule } from './services/address/address.module';
 const cookieSession = require('cookie-session');
 
 declare global {

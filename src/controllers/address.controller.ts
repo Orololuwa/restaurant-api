@@ -4,7 +4,7 @@ import { auth } from 'src/core/decorators/auth.decorator';
 import { CreateAddressDTO } from 'src/core/dtos/address/create-address.dto';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import { Role } from 'src/lib/helpers';
-import { AddressService } from 'src/services/delivery-details/address.service';
+import { AddressService } from 'src/services/address/address.service';
 
 @Controller('address')
 export class AddressController {
