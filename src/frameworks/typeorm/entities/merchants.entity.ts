@@ -1,5 +1,3 @@
-import { Order } from 'src/frameworks/typeorm/entities/orders.entity';
-import { Role } from 'src/lib/helpers';
 import {
   Column,
   CreateDateColumn,
@@ -8,10 +6,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Address } from './address.entity';
+import { Restaurant } from './restaurants.entity';
 
 @Entity()
-export class User {
+export class Merchant {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,9 +22,6 @@ export class User {
   @Column({ nullable: true })
   phone: string;
 
-  @Column({ default: Role.User })
-  role: string;
-
   @Column({ nullable: true })
   password: string;
 
@@ -36,9 +31,6 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Order, (orders) => orders.user)
-  orders: Order[];
-
-  @OneToMany(() => Address, (address) => address.user)
-  address: Address;
+  @OneToMany(() => Restaurant, (restaurant) => restaurant.merchant)
+  restaurant: Restaurant;
 }

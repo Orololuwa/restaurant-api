@@ -1,34 +1,33 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
-  UnauthorizedException,
   ForbiddenException,
+  Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Role } from 'src/lib/helpers';
 import { isEmpty } from 'src/lib/utils';
-import { UsersService } from 'src/services/users/users.service';
+import { MerchantsService } from 'src/services/merchants/merchants.service';
 
-//
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class MerchantAuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private jwtService: JwtService,
-    private usersService: UsersService,
+    private merchService: MerchantsService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
-      const role = this.reflector.get<Role>('role', context.getHandler());
+      const role = this.reflector.get<Role>('merchant', context.getHandler());
       if (!role) {
         return true;
       }
 
-      if (role !== Role.Admin) {
+      if (role !== Role.Merchant) {
         return true;
       }
 
@@ -45,19 +44,21 @@ export class AdminGuard implements CanActivate {
         throw new UnauthorizedException('Unauthorized');
       }
 
-      const user = await this.usersService.findOne(decoded.sub);
-      if (isEmpty(user)) {
-        throw new ForbiddenException('User does not exist');
+      const merchant = await this.merchService.findOneWith({
+        email: decoded.email,
+        id: decoded.id,
+      });
+      if (isEmpty(merchant)) {
+        throw new ForbiddenException('Merchant does not exist');
       }
 
-      if (user.role !== role) {
-        throw new ForbiddenException(
-          'User unauthorized to perform this action',
-        );
-      }
+      //   if (role === Role.Admin && user.role !== Role.Admin) {
+      //     throw new ForbiddenException(
+      //       'User unauthorized to perform this action',
+      //     );
+      //   }
 
-      request.user = user;
-      console.log(user);
+      request.merchant = merchant.data;
       return true;
     } catch (error) {
       throw new UnauthorizedException(error?.message || 'Unauthorized');

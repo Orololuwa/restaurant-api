@@ -26,17 +26,9 @@ export class OrdersController {
 
   @Post()
   @auth(Role.User)
-  async createOrder(
-    @Body() body: CreateOrderDTO,
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    try {
-      const response = await this.ordersService.create(body, req.user as User);
-      return res.status(response.status).json(response);
-    } catch (error) {
-      res.status(error.status || 500).json(error);
-    }
+  async createOrder(@Body() body: CreateOrderDTO, @Req() req: Request) {
+    const response = await this.ordersService.create(body, req.user as User);
+    return response;
   }
 
   @Serialize(OrderDTO)

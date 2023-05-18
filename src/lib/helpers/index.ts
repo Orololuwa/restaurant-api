@@ -6,4 +6,5 @@ export enum ResponseState {
 export enum Role {
   User = 'user',
   Admin = 'admin',
+  Merchant = 'merchant',
 }

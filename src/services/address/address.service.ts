@@ -43,6 +43,23 @@ export class AddressService {
     }
   }
 
+  async createForRestaurant(body: CreateAddressDTO) {
+    try {
+      const createdAddress = this.repo.create(body);
+
+      const address = await this.repo.save(createdAddress);
+
+      return {
+        message: 'Address created successfully',
+        data: address,
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updatePrimary(id: number, user: User) {
     try {
       const primaryAddress = (

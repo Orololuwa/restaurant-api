@@ -1,42 +1,35 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MenuItemModule } from './services/menu-item/menu-item.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dataSourceOptions } from 'db/data-source';
-import { UsersModule } from './services/users/users.module';
-import { AuthModule } from './services/auth/auth.module';
-import { OrdersModule } from './services/orders/orders.module';
-import { MenuItemPurchaseModule } from './services/menu-item-purchase/menu-item-purchase.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './core/guards/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { JWT_CONSTANT } from 'src/lib/config/app.config';
-import { AddressModule } from './services/address/address.module';
+import services from './services';
+import { Merchant } from './frameworks/typeorm/entities/merchants.entity';
+import { MerchantAuthGuard } from './core/guards/merchant.guard';
 const cookieSession = require('cookie-session');
 
 declare global {
   namespace Express {
     interface Request {
       user?: User;
+      merchant?: Merchant;
     }
   }
 }
 
 @Module({
   imports: [
+    ...services,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env`,
     }),
     TypeOrmModule.forRoot(dataSourceOptions),
-    MenuItemModule,
-    UsersModule,
-    AuthModule,
-    OrdersModule,
-    MenuItemPurchaseModule,
-    AddressModule,
     JwtModule.register({
       secret: JWT_CONSTANT.secret,
       signOptions: { expiresIn: `${JWT_CONSTANT.expiration}s` },
@@ -48,6 +41,10 @@ declare global {
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: MerchantAuthGuard,
     },
   ],
 })

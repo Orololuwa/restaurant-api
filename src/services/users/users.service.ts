@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
@@ -25,32 +25,34 @@ export class UsersService {
   }
 
   async findAll() {
-    const users = await this.repo
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.address', 'address')
-      .select(['user.id', 'user.name', 'user.email', 'address'])
-      .getMany();
+    try {
+      const users = await this.repo
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.address', 'address')
+        .select([
+          'user.id',
+          'user.name',
+          'user.email',
+          'user.password',
+          'address',
+        ])
+        .getMany();
 
-    return {
-      message: 'Users retrieved successfully',
-      data: { users },
-      status: HttpStatus.OK,
-      state: ResponseState.SUCCESS,
-    };
-  }
-
-  findOne(id: number) {
-    if (!id) return null;
-    return this.repo.findOneBy({ id });
-  }
-
-  async remove(id: number) {
-    const user = await this.findOne(id);
-
-    if (!user) {
-      throw new NotFoundException('User not found');
+      return {
+        message: 'Users retrieved successfully',
+        data: { users },
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
     }
+  }
 
-    return this.repo.remove(user);
+  async findOne(id: number) {
+    if (!id) return null;
+    const { password, ...data } = await this.repo.findOneBy({ id });
+
+    return data;
   }
 }

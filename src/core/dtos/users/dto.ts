@@ -32,8 +32,8 @@ export class UserDTO {
   @Expose()
   phone: string;
 
-  @Expose()
-  role: Role;
+  // @Expose()
+  // role: Role;
 }
 
 export class SignInDTO {
