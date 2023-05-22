@@ -19,6 +19,9 @@ export class Merchant {
   @Column()
   lastName: string;
 
+  @Column({ nullable: true })
+  middleName: string;
+
   @Column({ unique: true })
   email: string;
 

@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsPhoneNumber } from 'class-validator';
+import { IsString, IsEmail, IsPhoneNumber, IsOptional } from 'class-validator';
 
 export class CreateMerchantDTO {
   @IsString()
@@ -6,6 +6,10 @@ export class CreateMerchantDTO {
 
   @IsString()
   lastName: string;
+
+  @IsString()
+  @IsOptional()
+  middleName: string;
 
   @IsEmail()
   email: string;

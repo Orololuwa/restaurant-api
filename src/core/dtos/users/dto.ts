@@ -1,10 +1,17 @@
 import { Expose } from 'class-transformer';
-import { IsEmail, IsString, IsPhoneNumber } from 'class-validator';
+import { IsEmail, IsString, IsPhoneNumber, IsOptional } from 'class-validator';
 import { Role } from 'src/lib/helpers';
 
 export class CreateUserDTO {
   @IsString()
-  name: string;
+  firstName: string;
+
+  @IsString()
+  lastName: string;
+
+  @IsString()
+  @IsOptional()
+  middleName: string;
 
   @IsEmail()
   email: string;
@@ -23,8 +30,15 @@ export class UserDTO {
   @Expose()
   id: number;
 
-  @Expose()
-  name: string;
+  @IsString()
+  firstName: string;
+
+  @IsString()
+  lastName: string;
+
+  @IsString()
+  @IsOptional()
+  middleName: string;
 
   @Expose()
   email: string;
