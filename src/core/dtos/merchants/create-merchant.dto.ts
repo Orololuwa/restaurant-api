@@ -2,7 +2,10 @@ import { IsString, IsEmail, IsPhoneNumber } from 'class-validator';
 
 export class CreateMerchantDTO {
   @IsString()
-  name: string;
+  firstName: string;
+
+  @IsString()
+  lastName: string;
 
   @IsEmail()
   email: string;

@@ -68,13 +68,18 @@ export class MerchantAuthService {
         ...rest,
       });
 
-      return this.signIn({ email: merchant.email, password });
+      return this.signIn({ email: merchant.email, password }, { signUp: true });
     } catch (error) {
       throw error;
     }
   }
 
-  async signIn(body: { email: string; password: string }) {
+  async signIn(
+    body: { email: string; password: string },
+    options?: {
+      signUp?: boolean;
+    },
+  ) {
     try {
       const merchant = await this.validateUser(body.email, body.password);
       const payload = { email: merchant.email, id: merchant.id };
@@ -82,7 +87,9 @@ export class MerchantAuthService {
       const access_token = this.jwtService.sign(payload);
 
       return {
-        message: 'Merchant logged in successfully',
+        message: options?.signUp
+          ? 'Merchant created successfully'
+          : 'Merchant logged in successfully',
         data: {
           merchant,
           access_token,
