@@ -4,12 +4,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Address } from './address.entity';
 import { Merchant } from './merchants.entity';
+import { MenuItem } from './menu-item.entity';
 
 @Entity()
 export class Restaurant {
@@ -40,4 +42,7 @@ export class Restaurant {
 
   @ManyToOne(() => Merchant, (merchant) => merchant.restaurant)
   merchant: Merchant;
+
+  @OneToMany(() => MenuItem, (menuItems) => menuItems.restaurant)
+  menuItems: MenuItem;
 }

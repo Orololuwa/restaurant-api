@@ -1,28 +1,34 @@
-import {
-  BadRequestException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateMenuItemDTO } from 'src/core/dtos/menu-item/create-menu-item.dto';
 import { ResponseState } from 'src/lib/helpers';
 import { Repository } from 'typeorm';
 import { MenuItem } from '../../frameworks/typeorm/entities/menu-item.entity';
+import { OptionalQuery } from 'src/core/types';
+import { RestaurantService } from '../restaurants/restaurants.service';
 
 @Injectable()
 export class MenuItemService {
-  constructor(@InjectRepository(MenuItem) private repo: Repository<MenuItem>) {}
+  constructor(
+    @InjectRepository(MenuItem) private repo: Repository<MenuItem>,
+    private restaurantService: RestaurantService,
+  ) {}
 
   async create(body: CreateMenuItemDTO) {
     try {
-      const existing = await this.find({ name: body.name });
+      const { restaurantId, ...rest } = body;
 
-      if (existing.data.length) {
-        throw new BadRequestException(`Menu Item (${body.name}) exists`);
-      }
+      const restaurant = (
+        await this.restaurantService.findOneWith({
+          id: restaurantId,
+        })
+      ).data;
 
-      const created = this.repo.create(body);
+      if (!restaurant) throw new NotFoundException('Restaurant not found');
+
+      const created = this.repo.create(rest);
+
+      created.restaurant = restaurant;
 
       const menuItem = await this.repo.save(created);
 
@@ -39,12 +45,13 @@ export class MenuItemService {
     }
   }
 
-  async find({ name }: { name: string }) {
+  async find(entityOptions: OptionalQuery<MenuItem>) {
     try {
-      const menuItems = await this.repo.find({ where: { name } });
+      const data = await this.repo.find({ where: entityOptions });
+
       return {
         message: 'Menu Item(s) retrieved successfully',
-        data: menuItems,
+        data,
         status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };

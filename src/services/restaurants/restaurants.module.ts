@@ -9,5 +9,6 @@ import { AddressModule } from '../address/address.module';
   imports: [TypeOrmModule.forFeature([Restaurant]), AddressModule],
   providers: [RestaurantService],
   controllers: [RestaurantController],
+  exports: [RestaurantService],
 })
 export class RestaurantModule {}

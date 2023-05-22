@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { MenuItemPurchase } from './menu-item-purchase.entity';
+import { Restaurant } from './restaurants.entity';
 
 @Entity()
 export class MenuItem {
@@ -36,4 +38,7 @@ export class MenuItem {
     (menuItemPurchase) => menuItemPurchase.menuItem,
   )
   menuItemPurchase: MenuItem;
+
+  @ManyToOne(() => Restaurant, (restaurant) => restaurant.menuItems)
+  restaurant: Restaurant;
 }

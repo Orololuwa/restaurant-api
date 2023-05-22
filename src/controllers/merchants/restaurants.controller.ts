@@ -6,7 +6,7 @@ import { CreateRestaurantDTO } from 'src/core/dtos/restaurants/create-restaurant
 import { Role } from 'src/lib/helpers';
 import { RestaurantService } from 'src/services/restaurants/restaurants.service';
 
-@Controller('restaurant')
+@Controller('merchant/restaurant')
 export class RestaurantController {
   constructor(private restaurantService: RestaurantService) {}
 
