@@ -5,10 +5,14 @@ import { OptionalQuery } from 'src/core/types';
 import { Merchant } from 'src/frameworks/typeorm/entities/merchants.entity';
 import { CreateMerchantDTO } from 'src/core/dtos/merchants/create-merchant.dto';
 import { ResponseState } from 'src/lib/helpers';
+import { RestaurantService } from '../restaurants/restaurants.service';
 
 @Injectable()
 export class MerchantsService {
-  constructor(@InjectRepository(Merchant) private repo: Repository<Merchant>) {}
+  constructor(
+    @InjectRepository(Merchant) private repo: Repository<Merchant>,
+    private restaurantService: RestaurantService,
+  ) {}
 
   async create(body: CreateMerchantDTO) {
     try {
@@ -49,6 +53,25 @@ export class MerchantsService {
       return {
         message: 'Found',
         data: merchant,
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getProfile(merchant: Merchant) {
+    try {
+      const restaurants = (await this.restaurantService.findAll({ merchant }))
+        .data;
+      const profile = { ...merchant, setupComplete: !!restaurants.length };
+
+      delete profile.password;
+
+      return {
+        data: profile,
+        message: 'Profile retrieved',
         status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };

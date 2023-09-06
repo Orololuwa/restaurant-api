@@ -10,25 +10,25 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    depends_on:
-      - burger-builder-db
+  #   depends_on:
+  #     - burger-builder-db
 
-  burger-builder-db:
-    image: bitnami/mariadb:latest
-    container_name: burger-builder-db
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      # - ALLOW_EMPTY_PASSWORD=yes
-      - MARIADB_DATABASE=burger_builder
-      - 'MARIADB_USER=${DB_USERNAME}'
-      - 'MARIADB_PASSWORD=${DB_PASSWORD}'
-      - 'MARIADB_ROOT_PASSWORD=${DB_PASSWORD}'
-    volumes:
-      - mariadb-data:/bitnami/mariadb
-    ports:
-      - 3309:3306
+  # burger-builder-db:
+  #   image: bitnami/mariadb:latest
+  #   container_name: burger-builder-db
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     # - ALLOW_EMPTY_PASSWORD=yes
+  #     - MARIADB_DATABASE=burger_builder
+  #     - 'MARIADB_USER=${DB_USERNAME}'
+  #     - 'MARIADB_PASSWORD=${DB_PASSWORD}'
+  #     - 'MARIADB_ROOT_PASSWORD=${DB_PASSWORD}'
+  #   volumes:
+  #     - mariadb-data:/bitnami/mariadb
+  #   ports:
+  #     - 3309:3306
 
   # db:
   #   platform: linux/x86_64

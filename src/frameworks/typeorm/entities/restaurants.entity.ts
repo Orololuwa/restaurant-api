@@ -16,7 +16,7 @@ import { MenuItem } from './menu-item.entity';
 @Entity()
 export class Restaurant {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column()
   name: string;

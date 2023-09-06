@@ -13,6 +13,7 @@ import { ResponseState } from 'src/lib/helpers';
 import { OptionalQuery } from 'src/core/types';
 import { AddressService } from '../address/address.service';
 import { AddRestaurantAddressDTO } from 'src/core/dtos/restaurants/add-restaurant-address.dto';
+import { EditRestaurantDTO } from 'src/core/dtos/restaurants/edit-restaurant.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -73,9 +74,31 @@ export class RestaurantService {
     }
   }
 
+  async findAll(options?: { merchant?: Merchant }) {
+    try {
+      const restaurants = await this.repo.find({
+        where: { merchant: { id: options?.merchant?.id } || undefined },
+      });
+
+      console.log(restaurants);
+
+      return {
+        message: 'Restaurants retrieved successfully',
+        data: restaurants,
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findOneWith(field: OptionalQuery<Restaurant>) {
     try {
-      const restaurant = await this.repo.findOne({ where: field });
+      const { merchant, ...options } = field;
+      const restaurant = await this.repo.findOne({
+        where: { merchant: { id: merchant?.id }, ...options },
+      });
 
       return {
         message: 'Found',
@@ -84,6 +107,57 @@ export class RestaurantService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
+      throw error;
+    }
+  }
+
+  async update(
+    id: number,
+    body: OptionalQuery<EditRestaurantDTO>,
+    merchant: Merchant,
+  ) {
+    try {
+      const restaurant = (
+        await this.findOneWith({
+          id,
+          merchant,
+        })
+      ).data;
+
+      if (!restaurant) {
+        throw new BadRequestException('Restaurant does not exist');
+      }
+
+      Object.assign(restaurant, body);
+
+      restaurant.merchant = merchant;
+
+      await this.repo.save(restaurant);
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Restaurant updated successfully',
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async testOneToOne() {
+    try {
+      const restaurants = await this.repo.find({
+        relations: { address: true },
+      });
+
+      return {
+        data: restaurants,
+        status: HttpStatus.OK,
+        message: 'Restaurant updated successfully',
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      console.log(error);
       throw error;
     }
   }

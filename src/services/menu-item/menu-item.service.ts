@@ -20,7 +20,7 @@ export class MenuItemService {
 
       const restaurant = (
         await this.restaurantService.findOneWith({
-          id: restaurantId,
+          id: +restaurantId,
         })
       ).data;
 
