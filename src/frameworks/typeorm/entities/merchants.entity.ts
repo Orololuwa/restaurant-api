@@ -2,11 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Restaurant } from './restaurants.entity';
+import { WebAuthN } from './web-auth-n.entity';
 
 @Entity()
 export class Merchant {
@@ -39,4 +42,11 @@ export class Merchant {
 
   @OneToMany(() => Restaurant, (restaurant) => restaurant.merchant)
   restaurant: Restaurant;
+
+  @OneToOne(() => WebAuthN)
+  @JoinColumn()
+  webAuthN: WebAuthN;
+
+  @Column({ default: false })
+  isWebAuthEnabled: boolean;
 }

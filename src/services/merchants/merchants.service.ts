@@ -99,4 +99,19 @@ export class MerchantsService {
     if (!id) return null;
     return this.repo.findOneBy({ id });
   }
+
+  async update(id, field: OptionalQuery<Merchant>) {
+    try {
+      await this.repo.update(id, { ...field });
+
+      return {
+        message: 'Found',
+        data: {},
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

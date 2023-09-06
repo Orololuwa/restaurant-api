@@ -55,4 +55,19 @@ export class UsersService {
 
     return data;
   }
+
+  async update(id, field: OptionalQuery<User>) {
+    try {
+      await this.repo.update(id, { ...field });
+
+      return {
+        message: 'Found',
+        data: {},
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

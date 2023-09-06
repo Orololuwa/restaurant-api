@@ -51,7 +51,7 @@ setInterval(() => {
   Object.keys(challenges).forEach((it) => delete challenges[it]);
 }, 10 * 60 * 1000);
 
-type IFidoUser = Merchant | User;
+type IFidoUser = Partial<Merchant | User>;
 
 export type UserWebauthn = {
   publicKey: string;
@@ -77,7 +77,7 @@ export const WebAuthN = {
   },
 
   verifyAttestation: async (
-    user: User,
+    user: IFidoUser,
     attestation: Attenstation,
     resident = false,
   ): Promise<UserWebauthn> => {
@@ -100,7 +100,7 @@ export const WebAuthN = {
     };
   },
 
-  assert: async (user: User, auth: UserWebauthn) => {
+  assert: async (user: IFidoUser, auth: UserWebauthn) => {
     const options = await fido2.assertionOptions();
 
     const encoded = {
@@ -120,7 +120,7 @@ export const WebAuthN = {
   },
 
   verifyAssertion: async (
-    user: User,
+    user: IFidoUser,
     assertion: Assertion,
     auth: UserWebauthn,
   ): Promise<boolean> => {
