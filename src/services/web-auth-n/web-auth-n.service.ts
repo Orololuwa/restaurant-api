@@ -9,29 +9,32 @@ import {
 import { WebAuthN } from 'src/frameworks/typeorm/entities/web-auth-n.entity';
 import { ResponseState } from 'src/lib/helpers';
 import { Repository } from 'typeorm';
-import { WebAuthN as WebAuthNHelper } from 'src/lib/helpers/web-auth-n';
+import { WebAuthNHelper } from 'src/frameworks/web-auth-n/web-auth-n';
 import { MerchantsService } from '../merchants/merchants.service';
+import { ErrorService } from '../error/error.service';
 
 @Injectable()
 export class WebAuthService {
   constructor(
     @InjectRepository(WebAuthN) private data: Repository<WebAuthN>,
     private merchantService: MerchantsService,
+    private errorService: ErrorService,
   ) {}
 
   async getResidentKeys(payload: IGetResidentKeys) {
     try {
       const { id } = payload;
-      const webAuthNkeys = await this.data.findOneBy({ id });
+      const merchant = await this.merchantService.findOne(id);
+      const isWebAuthEnabled = merchant.isWebAuthEnabled;
 
       return {
-        data: webAuthNkeys,
+        data: { isWebAuthEnabled },
         message: 'Profile retrieved',
         status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      await this.errorService.error(error);
     }
   }
 
@@ -47,7 +50,7 @@ export class WebAuthService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      await this.errorService.error(error);
     }
   }
 
@@ -60,7 +63,8 @@ export class WebAuthService {
         true,
       );
 
-      const data = await this.data.create({ ...webAuthData });
+      const data = this.data.create({ ...webAuthData });
+      await this.data.save(data);
       await this.merchantService.update(user.id, {
         webAuthN: data,
         isWebAuthEnabled: true,
@@ -73,7 +77,7 @@ export class WebAuthService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      await this.errorService.error(error);
     }
   }
 
@@ -88,7 +92,7 @@ export class WebAuthService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      await this.errorService.error(error);
     }
   }
 
@@ -134,7 +138,7 @@ export class WebAuthService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      await this.errorService.error(error);
     }
   }
 }

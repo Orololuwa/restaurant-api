@@ -80,8 +80,6 @@ export class RestaurantService {
         where: { merchant: { id: options?.merchant?.id } || undefined },
       });
 
-      console.log(restaurants);
-
       return {
         message: 'Restaurants retrieved successfully',
         data: restaurants,

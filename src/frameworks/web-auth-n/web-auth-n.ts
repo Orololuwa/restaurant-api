@@ -2,10 +2,10 @@ import { decode, encode } from 'base64-arraybuffer';
 import { Fido2Lib, Fido2LibOptions } from 'fido2-lib';
 import { Merchant } from 'src/frameworks/typeorm/entities/merchants.entity';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
-import { UniqueId } from '../utils';
+import { UniqueId } from '../../lib/utils';
 
 const opts: Fido2LibOptions = {
-  timeout: 30 * 1000,
+  timeout: 120 * 1000,
   rpId: process.env.WEBAUTHN_RP_ID ?? 'localhost',
   rpName: 'restaurant-api',
   rpIcon: 'https://media.antony.red/logoTransparent.png',
@@ -27,6 +27,7 @@ export type Attenstation = {
   response: {
     attestationObject: string;
     clientDataJSON: string;
+    userHandle?: string;
   };
 };
 
@@ -58,8 +59,8 @@ export type UserWebauthn = {
   credentialId: string;
 };
 
-export const WebAuthN = {
-  attestate: async (user: IFidoUser, resident = false) => {
+export const WebAuthNHelper = {
+  attestate: async (user: IFidoUser, resident = true) => {
     const options = await (resident
       ? fido2Resident
       : fido2
@@ -79,7 +80,7 @@ export const WebAuthN = {
   verifyAttestation: async (
     user: IFidoUser,
     attestation: Attenstation,
-    resident = false,
+    resident = true,
   ): Promise<UserWebauthn> => {
     const result = await (resident ? fido2Resident : fido2).attestationResult(
       {

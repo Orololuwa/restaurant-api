@@ -1,7 +1,13 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsNotEmptyObject,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Merchant } from 'src/frameworks/typeorm/entities/merchants.entity';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
-import { Assertion, Attenstation } from 'src/lib/helpers/web-auth-n';
+import { Assertion, Attenstation } from 'src/frameworks/web-auth-n/web-auth-n';
 
 export interface IGetResidentKeys {
   id: number;
@@ -16,23 +22,16 @@ export interface IAttestateEnd {
   attestation: Attenstation;
 }
 
-export interface IAssertRemove {
-  user: Partial<User | Merchant>;
+export interface IWebAuthLogin {
   assertion: Assertion;
   challenge: string;
 }
 
-export class GetResidentKeysDTO {
-  @IsNotEmpty()
-  @IsNumber()
-  id: number;
+export interface IAssertRemove extends IWebAuthLogin {
+  user: Partial<User | Merchant>;
 }
 
-export class AttestateEndDTO {
-  @IsNotEmpty()
-  @IsString()
-  rawId: string;
-
+export class IAttestResponse {
   @IsNotEmpty()
   @IsString()
   attestationObject: string;
@@ -42,15 +41,18 @@ export class AttestateEndDTO {
   clientDataJSON: string;
 }
 
-export class AssertEndRemoveDTO {
-  @IsNotEmpty()
-  @IsString()
-  challenge: string;
-
+export class AttestateEndDTO {
   @IsNotEmpty()
   @IsString()
   rawId: string;
 
+  @IsNotEmptyObject()
+  @ValidateNested()
+  @Type(() => IAttestResponse)
+  response: IAttestResponse;
+}
+
+export class IAssertResponse {
   @IsNotEmpty()
   @IsString()
   authenticatorData: string;
@@ -62,4 +64,34 @@ export class AssertEndRemoveDTO {
   @IsNotEmpty()
   @IsString()
   signature: string;
+}
+
+export class AssertEndRemoveDTO {
+  @IsNotEmpty()
+  @IsString()
+  challenge: string;
+
+  @IsNotEmpty()
+  @IsString()
+  rawId: string;
+
+  @IsNotEmptyObject()
+  @ValidateNested()
+  @Type(() => IAssertResponse)
+  response: IAssertResponse;
+}
+
+export class IWebAuthLoginDTO {
+  @IsNotEmpty()
+  @IsString()
+  challenge: string;
+
+  @IsNotEmpty()
+  @IsString()
+  rawId: string;
+
+  @IsNotEmptyObject()
+  @ValidateNested()
+  @Type(() => IAssertResponse)
+  response: IAssertResponse;
 }

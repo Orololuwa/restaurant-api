@@ -97,7 +97,7 @@ export class MerchantsService {
 
   findOne(id: number) {
     if (!id) return null;
-    return this.repo.findOneBy({ id });
+    return this.repo.findOne({ where: { id }, relations: { webAuthN: true } });
   }
 
   async update(id, field: OptionalQuery<Merchant>) {

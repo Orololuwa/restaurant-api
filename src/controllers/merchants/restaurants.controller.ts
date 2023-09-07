@@ -43,7 +43,6 @@ export class RestaurantController {
     @Res() res: Response,
     @Param('id') id: number,
   ) {
-    console.log(request.merchant);
     const response = await this.restaurantService.findOneWith({
       merchant: request?.merchant,
       id,
@@ -71,7 +70,7 @@ export class RestaurantController {
   @Get('test/one-to-one')
   async testOneToOne(@Res() res: Response) {
     try {
-      console.log("one")
+      console.log('one');
       const response = await this.restaurantService.testOneToOne();
 
       return res.status(response.status).json(response);

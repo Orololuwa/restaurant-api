@@ -10,12 +10,16 @@ import { compareHash, createHash } from 'src/lib/utils';
 import { JwtService } from '@nestjs/jwt';
 import { MerchantsService } from 'src/services/merchants/merchants.service';
 import { CreateMerchantDTO } from 'src/core/dtos/merchants/create-merchant.dto';
+import { IWebAuthLogin } from 'src/core/dtos/web-auth-n';
+import { WebAuthNHelper } from 'src/frameworks/web-auth-n/web-auth-n';
+import { ErrorService } from 'src/services/error/error.service';
 
 @Injectable()
 export class MerchantAuthService {
   constructor(
     private merchantService: MerchantsService,
     private jwtService: JwtService,
+    private errorService: ErrorService,
   ) {}
 
   async validateUser(email: string, pass: string) {
@@ -70,7 +74,7 @@ export class MerchantAuthService {
 
       return this.signIn({ email: merchant.email, password }, { signUp: true });
     } catch (error) {
-      throw error;
+      await this.errorService.error(error);
     }
   }
 
@@ -98,7 +102,71 @@ export class MerchantAuthService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      await this.errorService.error(error);
+    }
+  }
+
+  async loginWebAuthN(payload: IWebAuthLogin) {
+    try {
+      const { assertion, challenge } = payload;
+      const { userHandle } = assertion.response;
+
+      console.log(payload);
+
+      if (!challenge || !userHandle)
+        return Promise.reject({
+          error: 'NotFound',
+          message: 'WebAuth Signature not found',
+          status: HttpStatus.NOT_FOUND,
+          state: ResponseState.ERROR,
+        });
+
+      const merchant = await this.merchantService.findOne(+userHandle);
+      if (!merchant)
+        return Promise.reject({
+          message: 'User not found',
+          error: 'NotFound',
+          status: HttpStatus.NOT_FOUND,
+          state: ResponseState.ERROR,
+        });
+
+      const { webAuthN, isWebAuthEnabled } = merchant;
+      if (!webAuthN || !isWebAuthEnabled)
+        return Promise.reject({
+          message: 'WebAuth not enabled. Please log in normally and set it up',
+          error: 'NotFound',
+          status: HttpStatus.NOT_FOUND,
+          state: ResponseState.ERROR,
+        });
+
+      const isAssertionVerified = await WebAuthNHelper.verifyAssertionResident(
+        challenge as string,
+        webAuthN,
+        assertion,
+      );
+
+      if (!isAssertionVerified)
+        return Promise.reject({
+          message: 'Signature Invalid',
+          error: 'NotFound',
+          status: HttpStatus.NOT_FOUND,
+          state: ResponseState.ERROR,
+        });
+
+      const jwtPayload = { email: merchant.email, id: merchant.id };
+      const access_token = this.jwtService.sign(jwtPayload);
+
+      return {
+        data: {
+          merchant,
+          access_token,
+        },
+        message: 'WebAuth Login Succesful',
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      await this.errorService.error(error);
     }
   }
 }
