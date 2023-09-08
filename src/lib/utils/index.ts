@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 /** hash password */
 const saltRound = 10;
@@ -41,3 +42,12 @@ export const isEmpty = (value: string | number | object): boolean => {
     return false;
   }
 };
+
+export const hasAll = <T extends string>(
+  obj: Record<string | number, string>,
+  ...val: T[]
+): obj is Record<T, string> => !val.some((it) => !obj[it]);
+
+export type UniqueId = string;
+
+export const generateUniqueId = (): UniqueId => uuidv4().slice(0, 8);

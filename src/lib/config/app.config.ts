@@ -26,3 +26,5 @@ export const COOKIE_SESSION = {
 };
 
 export const PORT = getEnv('PORT');
+
+export const env = getEnv('NODE_ENV');
