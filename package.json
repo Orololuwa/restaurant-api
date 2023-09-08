@@ -46,7 +46,7 @@
     "class-validator": "^0.13.2",
     "cookie-session": "^2.0.0",
     "dotenv": "^16.0.3",
-    "fido2-lib": "^3.4.1",
+    "fido2-lib": "https://github.com/efabris/fido2-lib#extension_support",
     "mysql2": "^3.2.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",

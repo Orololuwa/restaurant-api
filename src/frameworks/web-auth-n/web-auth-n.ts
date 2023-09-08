@@ -5,9 +5,9 @@ import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import { UniqueId } from '../../lib/utils';
 
 const opts: Fido2LibOptions = {
-  timeout: 120 * 1000,
+  timeout: 30 * 1000,
   rpId: process.env.WEBAUTHN_RP_ID ?? 'localhost',
-  rpName: 'restaurant-api',
+  rpName: 'antonys-webauthn-demo',
   rpIcon: 'https://media.antony.red/logoTransparent.png',
   challengeSize: 128,
   attestation: 'direct',
@@ -16,7 +16,6 @@ const opts: Fido2LibOptions = {
   authenticatorUserVerification: 'discouraged',
 };
 
-const fido2 = new Fido2Lib({ ...opts, authenticatorRequireResidentKey: false });
 const fido2Resident = new Fido2Lib({
   ...opts,
   authenticatorRequireResidentKey: true,
@@ -27,7 +26,6 @@ export type Attenstation = {
   response: {
     attestationObject: string;
     clientDataJSON: string;
-    userHandle?: string;
   };
 };
 
@@ -60,15 +58,12 @@ export type UserWebauthn = {
 };
 
 export const WebAuthNHelper = {
-  attestate: async (user: IFidoUser, resident = true) => {
-    const options = await (resident
-      ? fido2Resident
-      : fido2
-    ).attestationOptions();
+  attestate: async (user: IFidoUser) => {
+    const options = await fido2Resident.attestationOptions();
     options.user = {
       id: user.id.toString(),
       name: user.email,
-      displayName: `${user?.firstName} ${user?.lastName}`,
+      displayName: user.email,
     };
 
     const encoded = { ...options, challenge: encode(options.challenge) };
@@ -80,9 +75,8 @@ export const WebAuthNHelper = {
   verifyAttestation: async (
     user: IFidoUser,
     attestation: Attenstation,
-    resident = true,
   ): Promise<UserWebauthn> => {
-    const result = await (resident ? fido2Resident : fido2).attestationResult(
+    const result = await fido2Resident.attestationResult(
       {
         ...attestation,
         rawId: decode(attestation.rawId),
@@ -99,53 +93,6 @@ export const WebAuthNHelper = {
       credentialId: encode(result.clientData.get('rawId')),
       publicKey: result.authnrData.get('credentialPublicKeyPem'),
     };
-  },
-
-  assert: async (user: IFidoUser, auth: UserWebauthn) => {
-    const options = await fido2.assertionOptions();
-
-    const encoded = {
-      ...options,
-      challenge: encode(options.challenge),
-      allowCredentials: [
-        {
-          type: 'public-key',
-          id: auth.credentialId,
-          transports: ['usb', 'ble', 'nfc'],
-        },
-      ],
-    };
-    challenges[user.id] = encoded.challenge;
-
-    return encoded;
-  },
-
-  verifyAssertion: async (
-    user: IFidoUser,
-    assertion: Assertion,
-    auth: UserWebauthn,
-  ): Promise<boolean> => {
-    return fido2
-      .assertionResult(
-        {
-          ...assertion,
-          rawId: decode(assertion.rawId),
-          response: {
-            ...assertion.response,
-            authenticatorData: decode(assertion.response.authenticatorData),
-          },
-        },
-        {
-          challenge: challenges[user.id],
-          origin: process.env.WEBAUTHN_ORIGIN ?? 'http://localhost:2024',
-          factor: 'either',
-          publicKey: auth.publicKey,
-          prevCounter: 0,
-          userHandle: null,
-        },
-      )
-      .then(() => true)
-      .catch(() => false);
   },
 
   assertResident: async () => {

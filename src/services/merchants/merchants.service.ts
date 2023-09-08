@@ -48,7 +48,10 @@ export class MerchantsService {
 
   async findOneWith(field: OptionalQuery<Merchant>) {
     try {
-      const merchant = await this.repo.findOne({ where: field });
+      const merchant = await this.repo.findOne({
+        where: field,
+        relations: { webAuthN: true },
+      });
 
       return {
         message: 'Found',

@@ -41,7 +41,7 @@ export class WebAuthService {
   async attestateBegin(payload: IAttestateBegin) {
     try {
       const { user } = payload;
-      const data = await WebAuthNHelper.attestate(user!, true);
+      const data = await WebAuthNHelper.attestate(user!);
 
       return {
         data,
@@ -60,7 +60,6 @@ export class WebAuthService {
       const webAuthData = await WebAuthNHelper.verifyAttestation(
         user,
         attestation,
-        true,
       );
 
       const data = this.data.create({ ...webAuthData });
@@ -137,6 +136,36 @@ export class WebAuthService {
         status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };
+    } catch (error) {
+      await this.errorService.error(error);
+    }
+  }
+
+  async getUserHandle(credentialId: string) {
+    try {
+      const data = await this.data.findOneBy({ credentialId });
+
+      if (!data)
+        return Promise.reject({
+          message: 'Signature not found',
+          error: 'NotFound',
+          status: HttpStatus.NOT_FOUND,
+          state: ResponseState.ERROR,
+        });
+
+      const merchant = await this.merchantService.findOneWith({
+        webAuthN: data,
+      });
+
+      if (!merchant || !merchant.data)
+        return Promise.reject({
+          message: 'User not found',
+          error: 'NotFound',
+          status: HttpStatus.NOT_FOUND,
+          state: ResponseState.ERROR,
+        });
+
+      return merchant.data;
     } catch (error) {
       await this.errorService.error(error);
     }

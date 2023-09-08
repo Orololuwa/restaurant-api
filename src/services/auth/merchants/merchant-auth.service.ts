@@ -13,6 +13,7 @@ import { CreateMerchantDTO } from 'src/core/dtos/merchants/create-merchant.dto';
 import { IWebAuthLogin } from 'src/core/dtos/web-auth-n';
 import { WebAuthNHelper } from 'src/frameworks/web-auth-n/web-auth-n';
 import { ErrorService } from 'src/services/error/error.service';
+import { WebAuthService } from 'src/services/web-auth-n/web-auth-n.service';
 
 @Injectable()
 export class MerchantAuthService {
@@ -20,6 +21,7 @@ export class MerchantAuthService {
     private merchantService: MerchantsService,
     private jwtService: JwtService,
     private errorService: ErrorService,
+    private webAuthService: WebAuthService,
   ) {}
 
   async validateUser(email: string, pass: string) {
@@ -109,11 +111,10 @@ export class MerchantAuthService {
   async loginWebAuthN(payload: IWebAuthLogin) {
     try {
       const { assertion, challenge } = payload;
-      const { userHandle } = assertion.response;
 
-      console.log(payload);
+      console.log({ payload });
 
-      if (!challenge || !userHandle)
+      if (!challenge)
         return Promise.reject({
           error: 'NotFound',
           message: 'WebAuth Signature not found',
@@ -121,7 +122,10 @@ export class MerchantAuthService {
           state: ResponseState.ERROR,
         });
 
-      const merchant = await this.merchantService.findOne(+userHandle);
+      const merchant = await this.webAuthService.getUserHandle(assertion.rawId);
+
+      console.log(merchant);
+
       if (!merchant)
         return Promise.reject({
           message: 'User not found',

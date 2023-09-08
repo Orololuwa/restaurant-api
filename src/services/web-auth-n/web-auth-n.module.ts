@@ -9,5 +9,6 @@ import { MerchantWebAuthController } from 'src/controllers/merchants/merchant-we
   imports: [TypeOrmModule.forFeature([WebAuthN]), MerchantsModule],
   providers: [WebAuthService],
   controllers: [MerchantWebAuthController],
+  exports: [WebAuthService],
 })
 export class WebAuthModule {}
