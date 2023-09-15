@@ -57,7 +57,6 @@ export class AdminGuard implements CanActivate {
       }
 
       request.user = user;
-      console.log(user);
       return true;
     } catch (error) {
       throw new UnauthorizedException(error?.message || 'Unauthorized');

@@ -112,8 +112,6 @@ export class MerchantAuthService {
     try {
       const { assertion, challenge } = payload;
 
-      console.log({ payload });
-
       if (!challenge)
         return Promise.reject({
           error: 'NotFound',
@@ -123,8 +121,6 @@ export class MerchantAuthService {
         });
 
       const merchant = await this.webAuthService.getUserHandle(assertion.rawId);
-
-      console.log(merchant);
 
       if (!merchant)
         return Promise.reject({

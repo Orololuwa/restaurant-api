@@ -15,7 +15,6 @@ export class MerchantWebAuthController {
     try {
       const merchant = req.merchant;
 
-      console.log({ merchant });
       const response = await this.webAuthService.getResidentKeys({
         id: merchant.id,
       });
