@@ -40,6 +40,21 @@ export class Restaurant {
   @JoinColumn()
   address: Address;
 
+  @Column({ nullable: true })
+  website: string;
+
+  @Column({ nullable: true })
+  twitter: string;
+
+  @Column({ nullable: true })
+  instagram: string;
+
+  @Column({ nullable: true })
+  linkedIn: string;
+
+  @Column({ nullable: true })
+  facebook: string;
+
   @ManyToOne(() => Merchant, (merchant) => merchant.restaurant)
   merchant: Merchant;
 

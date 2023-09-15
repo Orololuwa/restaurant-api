@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { OptionalQuery } from 'src/core/types';
 import { Merchant } from 'src/frameworks/typeorm/entities/merchants.entity';
 import { CreateMerchantDTO } from 'src/core/dtos/merchants/create-merchant.dto';
@@ -12,13 +12,14 @@ export class MerchantsService {
   constructor(
     @InjectRepository(Merchant) private repo: Repository<Merchant>,
     private restaurantService: RestaurantService,
+    private dataSource: DataSource,
   ) {}
 
   async create(body: CreateMerchantDTO) {
     try {
-      const merchant = this.repo.create(body);
+      const merchant = this.dataSource.manager.create(Merchant, { ...body });
 
-      await this.repo.save(merchant);
+      await this.dataSource.manager.save(merchant);
 
       return {
         message: 'Order created successfully',

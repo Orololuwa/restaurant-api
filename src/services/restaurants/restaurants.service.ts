@@ -6,9 +6,8 @@ import {
 } from '@nestjs/common';
 import { CreateRestaurantDTO } from 'src/core/dtos/restaurants/create-restaurant.dto';
 import { Merchant } from 'src/frameworks/typeorm/entities/merchants.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from 'src/frameworks/typeorm/entities/restaurants.entity';
-import { Repository } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { ResponseState } from 'src/lib/helpers';
 import { OptionalQuery } from 'src/core/types';
 import { AddressService } from '../address/address.service';
@@ -18,8 +17,8 @@ import { EditRestaurantDTO } from 'src/core/dtos/restaurants/edit-restaurant.dto
 @Injectable()
 export class RestaurantService {
   constructor(
-    @InjectRepository(Restaurant) private repo: Repository<Restaurant>,
     private addressService: AddressService,
+    private dataSource: DataSource,
   ) {}
 
   async create(body: CreateRestaurantDTO, merchant: Merchant) {
@@ -30,10 +29,12 @@ export class RestaurantService {
         throw new BadRequestException('A restaurant with this email exists');
       }
 
-      const restaurant = this.repo.create(body);
+      const restaurant = this.dataSource.manager.create(Restaurant, {
+        ...body,
+      });
       restaurant.merchant = merchant;
 
-      await this.repo.save(restaurant);
+      await this.dataSource.manager.save(restaurant);
 
       return {
         status: HttpStatus.OK,
@@ -61,7 +62,7 @@ export class RestaurantService {
 
       const restaurantCopy = { ...restaurant, address: createdAddress };
 
-      await this.repo.save(restaurantCopy);
+      await this.dataSource.manager.save(restaurantCopy);
 
       return {
         message: 'Address added successfully',
@@ -76,7 +77,7 @@ export class RestaurantService {
 
   async findAll(options?: { merchant?: Merchant }) {
     try {
-      const restaurants = await this.repo.find({
+      const restaurants = await this.dataSource.manager.find(Restaurant, {
         where: { merchant: { id: options?.merchant?.id } || undefined },
       });
 
@@ -94,7 +95,7 @@ export class RestaurantService {
   async findOneWith(field: OptionalQuery<Restaurant>) {
     try {
       const { merchant, ...options } = field;
-      const restaurant = await this.repo.findOne({
+      const restaurant = await this.dataSource.manager.findOne(Restaurant, {
         where: { merchant: { id: merchant?.id }, ...options },
       });
 
@@ -130,7 +131,7 @@ export class RestaurantService {
 
       restaurant.merchant = merchant;
 
-      await this.repo.save(restaurant);
+      await this.dataSource.manager.save(restaurant);
 
       return {
         status: HttpStatus.OK,
@@ -144,7 +145,7 @@ export class RestaurantService {
 
   async testOneToOne() {
     try {
-      const restaurants = await this.repo.find({
+      const restaurants = await this.dataSource.manager.find(Restaurant, {
         relations: { address: true },
       });
 
