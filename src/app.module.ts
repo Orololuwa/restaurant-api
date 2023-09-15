@@ -11,6 +11,7 @@ import { JWT_CONSTANT } from 'src/lib/config/app.config';
 import services from './services';
 import { Merchant } from './frameworks/typeorm/entities/merchants.entity';
 import { MerchantAuthGuard } from './core/guards/merchant.guard';
+// import { AllExceptionsFilter } from './core/interceptors/exception-filter';
 const cookieSession = require('cookie-session');
 
 declare global {
@@ -38,6 +39,7 @@ declare global {
   controllers: [AppController],
   providers: [
     AppService,
+    // AllExceptionsFilter,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
