@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { merchantAuth } from 'src/core/decorators/auth.decorator';
+import { CreateAddressDTO } from 'src/core/dtos/address/create-address.dto';
 import { AddRestaurantAddressDTO } from 'src/core/dtos/restaurants/add-restaurant-address.dto';
 import { CreateRestaurantDTO } from 'src/core/dtos/restaurants/create-restaurant.dto';
 import { EditRestaurantDTO } from 'src/core/dtos/restaurants/edit-restaurant.dto';
@@ -51,31 +52,46 @@ export class RestaurantController {
     return res.status(response.status).json(response);
   }
 
-  @Patch('address')
+  @Post('address/:id')
   @merchantAuth(Role.Merchant)
-  addAddress(@Body() body: AddRestaurantAddressDTO, @Req() req: Request) {
-    return this.restaurantService.addAddress(body, req.merchant);
+  async addAddress(
+    @Body() body: CreateAddressDTO,
+    @Res() res: Response,
+    @Param('id') id: number,
+  ) {
+    const payload: AddRestaurantAddressDTO = { id, address: body };
+    const response = await this.restaurantService.addAddress(payload);
+
+    return res.status(response.status).json(response);
+  }
+
+  @Patch('address/:id')
+  @merchantAuth(Role.Merchant)
+  async editAddress(
+    @Body() body: CreateAddressDTO,
+    @Res() res: Response,
+    @Param('id') id: number,
+  ) {
+    const payload: AddRestaurantAddressDTO = { id, address: body };
+    const response = await this.restaurantService.editAddress(payload);
+
+    return res.status(response.status).json(response);
   }
 
   @Patch(':id')
   @merchantAuth(Role.Merchant)
-  updateRestaurant(
+  async updateRestaurant(
     @Body() body: EditRestaurantDTO,
     @Req() req: Request,
     @Param('id') id: number,
+    @Res() res: Response,
   ) {
-    return this.restaurantService.update(id, body, req.merchant);
-  }
+    const response = await this.restaurantService.update(
+      id,
+      body,
+      req.merchant,
+    );
 
-  @Get('test/one-to-one')
-  async testOneToOne(@Res() res: Response) {
-    try {
-      console.log('one');
-      const response = await this.restaurantService.testOneToOne();
-
-      return res.status(response.status).json(response);
-    } catch (error) {
-      console.log(error);
-    }
+    return res.status(response.status).json(response);
   }
 }

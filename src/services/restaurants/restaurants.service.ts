@@ -11,14 +11,20 @@ import { DataSource } from 'typeorm';
 import { ResponseState } from 'src/lib/helpers';
 import { OptionalQuery } from 'src/core/types';
 import { AddressService } from '../address/address.service';
-import { AddRestaurantAddressDTO } from 'src/core/dtos/restaurants/add-restaurant-address.dto';
+import {
+  AddRestaurantAddressDTO,
+  EditRestaurantAddressDTO,
+} from 'src/core/dtos/restaurants/add-restaurant-address.dto';
 import { EditRestaurantDTO } from 'src/core/dtos/restaurants/edit-restaurant.dto';
+import { ErrorService } from '../error/error.service';
+import { Address } from 'src/frameworks/typeorm/entities/address.entity';
 
 @Injectable()
 export class RestaurantService {
   constructor(
     private addressService: AddressService,
     private dataSource: DataSource,
+    private errorService: ErrorService,
   ) {}
 
   async create(body: CreateRestaurantDTO, merchant: Merchant) {
@@ -34,23 +40,24 @@ export class RestaurantService {
       });
       restaurant.merchant = merchant;
 
-      await this.dataSource.manager.save(restaurant);
+      const created = await this.dataSource.manager.save(restaurant);
 
       return {
         status: HttpStatus.OK,
+        data: created,
         message: 'Restaurant created successfully',
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      this.errorService.error(error);
     }
   }
 
-  async addAddress(body: AddRestaurantAddressDTO, _merchant: Merchant) {
+  async addAddress(body: AddRestaurantAddressDTO) {
     try {
-      const { address, email } = body;
+      const { address, id } = body;
 
-      const restaurant = (await this.findOneWith({ email })).data;
+      const restaurant = (await this.findOneWith({ id })).data;
 
       if (!restaurant) {
         throw new NotFoundException('Restaurant for merchant does not exist');
@@ -62,7 +69,9 @@ export class RestaurantService {
 
       const restaurantCopy = { ...restaurant, address: createdAddress };
 
-      await this.dataSource.manager.save(restaurantCopy);
+      await this.dataSource.manager.update(Restaurant, restaurant.id, {
+        address: createdAddress,
+      });
 
       return {
         message: 'Address added successfully',
@@ -71,7 +80,43 @@ export class RestaurantService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      this.errorService.error(error);
+    }
+  }
+
+  async editAddress(body: EditRestaurantAddressDTO) {
+    try {
+      const { id, address } = body;
+
+      const restaurant = await this.dataSource.manager.findOne(Restaurant, {
+        where: {
+          id,
+        },
+        relations: { address: true },
+      });
+
+      if (!restaurant) {
+        throw new NotFoundException('Restaurant for merchant does not exist');
+      }
+
+      const existingAdress = restaurant.address;
+
+      if (!existingAdress) {
+        throw new NotFoundException('Address for merchant not found');
+      }
+
+      await this.dataSource.manager.update(Address, existingAdress.id, {
+        ...address,
+      });
+
+      return {
+        message: 'Address edited successfully',
+        data: {},
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      this.errorService.error(error);
     }
   }
 
@@ -88,7 +133,7 @@ export class RestaurantService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      this.errorService.error(error);
     }
   }
 
@@ -106,7 +151,7 @@ export class RestaurantService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      this.errorService.error(error);
     }
   }
 
@@ -139,25 +184,32 @@ export class RestaurantService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      this.errorService.error(error);
     }
   }
 
-  async testOneToOne() {
-    try {
-      const restaurants = await this.dataSource.manager.find(Restaurant, {
-        relations: { address: true },
-      });
+  // async addSocials(
+  //   body: OptionalQuery<AddRestaurantSocialsDTO>,
+  //   id: number,
+  //   merchant: Merchant,
+  // ) {
+  //   try {
+  //     const restaurant = await this.dataSource.manager.findOneBy(Restaurant, {
+  //       id,
+  //       merchant,
+  //     });
 
-      return {
-        data: restaurants,
-        status: HttpStatus.OK,
-        message: 'Restaurant updated successfully',
-        state: ResponseState.SUCCESS,
-      };
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  }
+  //     if (!restaurant) throw new NotFoundException('Restaurant not found');
+
+  //     await this.dataSource.manager.update(Restaurant, id, { ...body });
+
+  //     return {
+  //       status: HttpStatus.OK,
+  //       message: 'Created successfully',
+  //       state: ResponseState.SUCCESS,
+  //     };
+  //   } catch (error) {
+  //     this.errorService.error(error);
+  //   }
+  // }
 }

@@ -15,7 +15,7 @@ export class ErrorService {
   constructor() {}
 
   public async error(error: any, action: string = ''): Promise<any> {
-    console.log('@error');
+    console.error('@error');
     const details: ErrorDetails = {
       technicalMessage: error.message,
       message: error.errorMessage
@@ -35,7 +35,7 @@ export class ErrorService {
     action: string;
   }): Promise<void> {
     const { error, action } = payload;
-    console.log('@send  error to a webhook for proper logging', action);
+    console.error('@send  error to a webhook for proper logging', action);
 
     Logger.error(error);
   }
