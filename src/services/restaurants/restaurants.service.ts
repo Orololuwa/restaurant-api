@@ -44,7 +44,7 @@ export class RestaurantService {
 
       return {
         status: HttpStatus.OK,
-        data: created,
+        data: { id: created.id },
         message: 'Restaurant created successfully',
         state: ResponseState.SUCCESS,
       };
@@ -67,15 +67,13 @@ export class RestaurantService {
         await this.addressService.createForRestaurant(address)
       ).data;
 
-      const restaurantCopy = { ...restaurant, address: createdAddress };
-
       await this.dataSource.manager.update(Restaurant, restaurant.id, {
         address: createdAddress,
       });
 
       return {
         message: 'Address added successfully',
-        data: restaurantCopy,
+        data: { id },
         status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };
@@ -111,7 +109,7 @@ export class RestaurantService {
 
       return {
         message: 'Address edited successfully',
-        data: {},
+        data: { id },
         status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };
@@ -142,11 +140,19 @@ export class RestaurantService {
       const { merchant, ...options } = field;
       const restaurant = await this.dataSource.manager.findOne(Restaurant, {
         where: { merchant: { id: merchant?.id }, ...options },
+        relations: { address: true },
       });
+
+      const setupComplete =
+        !!restaurant.address &&
+        !!restaurant.description &&
+        !!restaurant.email &&
+        !!restaurant.name &&
+        !!restaurant.logo;
 
       return {
         message: 'Found',
-        data: restaurant,
+        data: { ...restaurant, setupComplete },
         status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };
@@ -172,14 +178,11 @@ export class RestaurantService {
         throw new BadRequestException('Restaurant does not exist');
       }
 
-      Object.assign(restaurant, body);
-
-      restaurant.merchant = merchant;
-
-      await this.dataSource.manager.save(restaurant);
+      await this.dataSource.manager.update(Restaurant, id, { ...body });
 
       return {
         status: HttpStatus.OK,
+        data: { id },
         message: 'Restaurant updated successfully',
         state: ResponseState.SUCCESS,
       };
