@@ -29,9 +29,12 @@ export class RestaurantService {
 
   async create(body: CreateRestaurantDTO, merchant: Merchant) {
     try {
-      const isEmailExist = await this.findOneWith({ email: body.email });
+      const isEmailExist = await this.dataSource.manager.findOneBy(Restaurant, {
+        email: body.email,
+      });
 
-      if (isEmailExist.data) {
+      if (isEmailExist) {
+        console.log('@error;;;;;');
         throw new BadRequestException('A restaurant with this email exists');
       }
 
@@ -49,7 +52,7 @@ export class RestaurantService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      this.errorService.error(error);
+      await this.errorService.error(error);
     }
   }
 
@@ -78,7 +81,7 @@ export class RestaurantService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      this.errorService.error(error);
+      await this.errorService.error(error);
     }
   }
 
@@ -114,7 +117,7 @@ export class RestaurantService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      this.errorService.error(error);
+      await this.errorService.error(error);
     }
   }
 
@@ -131,7 +134,7 @@ export class RestaurantService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      this.errorService.error(error);
+      await this.errorService.error(error);
     }
   }
 
@@ -157,7 +160,7 @@ export class RestaurantService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      this.errorService.error(error);
+      await this.errorService.error(error);
     }
   }
 
@@ -187,7 +190,7 @@ export class RestaurantService {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      this.errorService.error(error);
+      await this.errorService.error(error);
     }
   }
 
@@ -212,7 +215,7 @@ export class RestaurantService {
   //       state: ResponseState.SUCCESS,
   //     };
   //   } catch (error) {
-  //     this.errorService.error(error);
+  //      await this.errorService.error(error);
   //   }
   // }
 }

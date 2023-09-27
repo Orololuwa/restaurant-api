@@ -47,6 +47,7 @@
     "cookie-session": "^2.0.0",
     "dotenv": "^16.0.3",
     "fido2-lib": "https://github.com/efabris/fido2-lib#extension_support",
+    "lodash": "^4.17.21",
     "mysql2": "^3.2.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",

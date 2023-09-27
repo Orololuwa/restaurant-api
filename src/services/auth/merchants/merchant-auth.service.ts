@@ -14,6 +14,7 @@ import { IWebAuthLogin } from 'src/core/dtos/web-auth-n';
 import { WebAuthNHelper } from 'src/frameworks/web-auth-n/web-auth-n';
 import { ErrorService } from 'src/services/error/error.service';
 import { WebAuthService } from 'src/services/web-auth-n/web-auth-n.service';
+import { serializeMerchant } from 'src/lib/utils/serializers';
 
 @Injectable()
 export class MerchantAuthService {
@@ -41,8 +42,7 @@ export class MerchantAuthService {
       throw new BadRequestException('Password not set: Cannot sign you in');
     }
 
-    const { password, ...result } = merchant;
-    return result;
+    return serializeMerchant(merchant);
   }
 
   async signUp(body: CreateMerchantDTO) {

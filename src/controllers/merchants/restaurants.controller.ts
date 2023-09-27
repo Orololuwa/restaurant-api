@@ -23,8 +23,19 @@ export class RestaurantController {
 
   @Post()
   @merchantAuth(Role.Merchant)
-  createRestaurant(@Body() body: CreateRestaurantDTO, @Req() req: Request) {
-    return this.restaurantService.create(body, req.merchant);
+  async createRestaurant(
+    @Body() body: CreateRestaurantDTO,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
+      console.log(body);
+      const response = await this.restaurantService.create(body, req.merchant);
+      return res.status(200).json(response);
+    } catch (error) {
+      console.log({ error });
+      return res.status(error.status || 500).json(error);
+    }
   }
 
   @Get()
