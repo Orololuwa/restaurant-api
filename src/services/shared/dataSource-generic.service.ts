@@ -9,9 +9,9 @@ import {
   FindOneOptions,
   FindOptionsWhere,
   InsertResult,
-  ObjectLiteral,
   UpdateResult,
 } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 export abstract class DataSourceGenericService<T> {
   protected constructor(
@@ -35,7 +35,10 @@ export abstract class DataSourceGenericService<T> {
 
   async findAllWithPagination(
     options: FindManyOptions<T>,
-    query: any,
+    query: {
+      page?: number;
+      perpage?: number;
+    },
   ): Promise<{
     data: T[];
     pagination: {
@@ -117,9 +120,7 @@ export abstract class DataSourceGenericService<T> {
   }
 
   async bulkInsert(
-    payload:
-      | OptionalQuery<ObjectLiteral extends T ? unknown : T>
-      | OptionalQuery<ObjectLiteral extends T ? unknown : T>[],
+    payload: QueryDeepPartialEntity<T> | QueryDeepPartialEntity<T>[],
   ): Promise<InsertResult> {
     try {
       const data = await this.dataSource
@@ -137,7 +138,7 @@ export abstract class DataSourceGenericService<T> {
 
   async update(
     id: number,
-    payload: OptionalQuery<ObjectLiteral extends T ? unknown : T>,
+    payload: QueryDeepPartialEntity<T>,
     options?: { transaction?: EntityManager },
   ): Promise<UpdateResult> {
     try {

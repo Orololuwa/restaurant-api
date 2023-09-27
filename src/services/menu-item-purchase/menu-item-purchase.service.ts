@@ -18,8 +18,9 @@ export class MenuItemPurchaseService {
     try {
       const { menuItemId, ...rest } = body;
 
-      const menuItem = (await this.menuItemService.findOne(menuItemId)).data
-        .menuItem;
+      const menuItem = await this.menuItemService.findOne({
+        where: { id: menuItemId },
+      });
 
       if (!menuItem) throw new NotFoundException('Menu Item not found');
 
