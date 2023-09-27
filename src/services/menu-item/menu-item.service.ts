@@ -5,7 +5,11 @@ import { MenuItem } from '../../frameworks/typeorm/entities/menu-item.entity';
 // import { OptionalQuery } from 'src/core/types';
 // import { RestaurantService } from '../restaurants/restaurants.service';
 import { DataSourceGenericService } from '../shared/dataSource-generic.service';
-import { OptionalQuery } from 'src/core/types';
+import {
+  IGetAllMenuItemsPayload,
+  IMenuItemQuery,
+} from 'src/core/dtos/menu-item';
+import { queryDbByDateFilter } from 'src/lib/utils/db';
 
 @Injectable()
 export class MenuItemService extends DataSourceGenericService<MenuItem> {
@@ -16,11 +20,30 @@ export class MenuItemService extends DataSourceGenericService<MenuItem> {
     super(dataSource, MenuItem);
   }
 
-  async getAllMenuItems(entityOptions: OptionalQuery<MenuItem>) {
+  cleanPageQuery(data: IMenuItemQuery): any {
+    let key = {};
+    if (data.perpage) key['perpage'] = data.perpage;
+    if (data.page) key['page'] = data.page;
+    return key;
+  }
+
+  cleanDateQuery(data: IMenuItemQuery): any {
+    let key = {};
+    if (data.to || data.from) {
+      const dateQuery = queryDbByDateFilter(data);
+      key = { ...key, ...dateQuery };
+    }
+    return key;
+  }
+
+  async getAllMenuItems(payload: IGetAllMenuItemsPayload) {
     try {
+      const { query, options } = payload;
+      const dateQuery = this.cleanDateQuery(query);
+      const pageQuery = this.cleanPageQuery(query);
       const data = await this.findAllWithPagination(
-        { where: entityOptions },
-        {},
+        { where: { ...options, ...dateQuery } },
+        { ...pageQuery },
       );
 
       return {

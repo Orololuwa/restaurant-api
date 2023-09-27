@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Query,
@@ -15,6 +16,7 @@ import { MenuItemService } from '../../services/menu-item/menu-item.service';
 import { Response } from 'express';
 import { merchantAuth } from 'src/core/decorators/auth.decorator';
 import { Role } from 'src/lib/helpers';
+import { IMenuItemBody, IMenuItemQuery } from 'src/core/dtos/menu-item';
 
 @Controller('merchant/menu-item')
 export class MenuItemsController {
@@ -22,10 +24,17 @@ export class MenuItemsController {
 
   @Get()
   @merchantAuth(Role.Merchant)
-  async getAllMenuItems(@Query() query: { id: number }, @Res() res: Response) {
+  async getAllMenuItems(
+    @Query() query: IMenuItemQuery,
+    @Res() res: Response,
+    @Body() body: IMenuItemBody,
+  ) {
     try {
-      const { id } = query;
-      const response = await this.menuItemService.getAllMenuItems({ id });
+      const { restaurantId } = body;
+      const response = await this.menuItemService.getAllMenuItems({
+        query,
+        options: { restaurant: { id: +restaurantId } as any },
+      });
       return res.status(response.status).json(response);
     } catch (error) {
       return res.status(error.status || 500).json(error.response);
