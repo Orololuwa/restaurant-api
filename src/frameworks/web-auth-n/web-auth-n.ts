@@ -5,7 +5,7 @@ import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import { UniqueId } from '../../lib/utils';
 
 const opts: Fido2LibOptions = {
-  timeout: 30 * 1000,
+  timeout: 1800 * 1000,
   rpId: process.env.WEBAUTHN_RP_ID ?? 'localhost',
   rpName: 'antonys-webauthn-demo',
   rpIcon: 'https://media.antony.red/logoTransparent.png',
