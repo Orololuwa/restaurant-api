@@ -1,6 +1,6 @@
 import { Controller, Get, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { merchantAuth } from 'src/core/decorators/auth.decorator';
+import { merchantAuth } from 'src/core/decorators';
 import { Role } from 'src/lib/helpers';
 import { MerchantsService } from 'src/services/merchants/merchants.service';
 

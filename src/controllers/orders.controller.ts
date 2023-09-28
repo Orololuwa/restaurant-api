@@ -14,7 +14,7 @@ import { CreateOrderDTO } from '../core/dtos/orders/create-order.dto';
 import { OrdersService } from 'src/services/orders/orders.service';
 import { Request, Response } from 'express';
 import { User } from '../frameworks/typeorm/entities/users.entity';
-import { auth } from 'src/core/decorators/auth.decorator';
+import { auth } from 'src/core/decorators';
 import { Role } from 'src/lib/helpers';
 import { OrderDTO } from 'src/core/dtos/orders/order.dto';
 import { Order } from 'src/frameworks/typeorm/entities/orders.entity';

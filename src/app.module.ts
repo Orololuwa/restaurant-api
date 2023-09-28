@@ -10,12 +10,15 @@ import services from './services';
 import { Merchant } from './frameworks/typeorm/entities/merchants.entity';
 import { MerchantAuthGuard } from './core/guards/merchant.guard';
 import { SharedModule } from './services/shared/shared.module';
+import { Restaurant } from './frameworks/typeorm/entities/restaurants.entity';
+import { IsRestaurantGuard } from './core/guards/restaurant.guard';
 
 declare global {
   namespace Express {
     interface Request {
       user?: User;
       merchant?: Merchant;
+      restaurant?: Restaurant;
     }
   }
 }
@@ -40,6 +43,10 @@ declare global {
     {
       provide: APP_GUARD,
       useClass: MerchantAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: IsRestaurantGuard,
     },
   ],
 })

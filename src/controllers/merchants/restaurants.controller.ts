@@ -9,7 +9,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { merchantAuth } from 'src/core/decorators/auth.decorator';
+import { merchantAuth } from 'src/core/decorators';
 import { CreateAddressDTO } from 'src/core/dtos/address/create-address.dto';
 import { AddRestaurantAddressDTO } from 'src/core/dtos/restaurants/add-restaurant-address.dto';
 import { CreateRestaurantDTO } from 'src/core/dtos/restaurants/create-restaurant.dto';
@@ -29,11 +29,9 @@ export class RestaurantController {
     @Res() res: Response,
   ) {
     try {
-      console.log(body);
       const response = await this.restaurantService.create(body, req.merchant);
       return res.status(200).json(response);
     } catch (error) {
-      console.log({ error });
       return res.status(error.status || 500).json(error);
     }
   }

@@ -36,7 +36,6 @@ export class ErrorService {
   }): Promise<void> {
     const { error, action } = payload;
     console.error('@send  error to a webhook for proper logging', action);
-
     Logger.error(error);
   }
 }

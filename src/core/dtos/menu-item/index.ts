@@ -11,7 +11,3 @@ export interface IMenuItemQuery extends IPaginationParams {
   from: string;
   to: string;
 }
-
-export interface IMenuItemBody {
-  restaurantId: number;
-}

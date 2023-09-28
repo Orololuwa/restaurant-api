@@ -10,12 +10,14 @@ import {
   IMenuItemQuery,
 } from 'src/core/dtos/menu-item';
 import { queryDbByDateFilter } from 'src/lib/utils/db';
+import { ErrorService } from '../error/error.service';
 
 @Injectable()
 export class MenuItemService extends DataSourceGenericService<MenuItem> {
   constructor(
     // private restaurantService: RestaurantService,
     dataSource: DataSource,
+    private errorService: ErrorService,
   ) {
     super(dataSource, MenuItem);
   }
@@ -53,7 +55,7 @@ export class MenuItemService extends DataSourceGenericService<MenuItem> {
         state: ResponseState.SUCCESS,
       };
     } catch (error) {
-      throw error;
+      await this.errorService.error(error);
     }
   }
 

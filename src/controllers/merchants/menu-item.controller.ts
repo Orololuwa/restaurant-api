@@ -1,7 +1,7 @@
 import {
-  Body,
   Controller,
   Get,
+  Param,
   Query,
   Res,
   // Delete,
@@ -14,30 +14,32 @@ import {
 import { MenuItemService } from '../../services/menu-item/menu-item.service';
 // import { CreateMenuItemDTO } from 'src/core/dtos/menu-item/create-menu-item.dto';
 import { Response } from 'express';
-import { merchantAuth } from 'src/core/decorators/auth.decorator';
+import { isRestaurant, merchantAuth } from 'src/core/decorators';
 import { Role } from 'src/lib/helpers';
-import { IMenuItemBody, IMenuItemQuery } from 'src/core/dtos/menu-item';
+import { IMenuItemQuery } from 'src/core/dtos/menu-item';
+import { IGenericRestaurantIdParam } from 'src/core/dtos';
 
-@Controller('merchant/menu-item')
+@Controller('merchant/:restaurantId/menu-item')
 export class MenuItemsController {
   constructor(private menuItemService: MenuItemService) {}
 
   @Get()
   @merchantAuth(Role.Merchant)
+  @isRestaurant()
   async getAllMenuItems(
     @Query() query: IMenuItemQuery,
     @Res() res: Response,
-    @Body() body: IMenuItemBody,
+    @Param() param: IGenericRestaurantIdParam,
   ) {
     try {
-      const { restaurantId } = body;
+      const { restaurantId } = param;
       const response = await this.menuItemService.getAllMenuItems({
         query,
         options: { restaurant: { id: +restaurantId } as any },
       });
       return res.status(response.status).json(response);
     } catch (error) {
-      return res.status(error.status || 500).json(error.response);
+      return res.status(error.status || 500).json(error);
     }
   }
 
@@ -48,7 +50,7 @@ export class MenuItemsController {
   //     const response = await this.menuItemService.create(body);
   //     return res.status(response.status).json(response);
   //   } catch (error) {
-  //     return res.status(error.status || 500).json(error.response);
+  //     return res.status(error.status || 500).json(error);
   //   }
   // }
 
@@ -63,7 +65,7 @@ export class MenuItemsController {
   //     const response = await this.menuItemService.update(+id, body);
   //     return res.status(response.status).json(response);
   //   } catch (error) {
-  //     return res.status(error.status || 500).json(error.response);
+  //     return res.status(error.status || 500).json(error);
   //   }
   // }
 
@@ -74,7 +76,7 @@ export class MenuItemsController {
   //     const response = await this.menuItemService.delete(+id);
   //     return res.status(response.status).json(response);
   //   } catch (error) {
-  //     return res.status(error.status || 500).json(error.response);
+  //     return res.status(error.status || 500).json(error);
   //   }
   // }
 }

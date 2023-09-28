@@ -34,7 +34,6 @@ export class RestaurantService {
       });
 
       if (isEmailExist) {
-        console.log('@error;;;;;');
         throw new BadRequestException('A restaurant with this email exists');
       }
 

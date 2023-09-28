@@ -36,7 +36,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message,
     };
 
-    console.error('@Error', { responseBody, exception });
+    console.error('@AllExceptionsFilter');
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
   }
@@ -49,6 +49,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const res = ctx.getResponse<Response>();
     const req = ctx.getRequest<Request>();
     const status = exception.getStatus();
+
+    console.log({ exception });
+
+    console.error('@HttpExceptionFilter');
 
     res.status(status).json({
       statusCode: status,

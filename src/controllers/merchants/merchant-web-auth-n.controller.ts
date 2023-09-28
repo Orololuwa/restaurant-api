@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { merchantAuth } from 'src/core/decorators/auth.decorator';
+import { merchantAuth } from 'src/core/decorators';
 import { AssertEndRemoveDTO, AttestateEndDTO } from 'src/core/dtos/web-auth-n';
 import { Role } from 'src/lib/helpers';
 import { WebAuthService } from 'src/services/web-auth-n/web-auth-n.service';

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
-import { auth } from 'src/core/decorators/auth.decorator';
+import { auth } from 'src/core/decorators';
 import { CreateAddressDTO } from 'src/core/dtos/address/create-address.dto';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import { Role } from 'src/lib/helpers';

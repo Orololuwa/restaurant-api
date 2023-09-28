@@ -1,8 +1,11 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { PORT } from './lib/config/app.config';
-// import { HttpExceptionFilter } from './core/interceptors/exception-filter';
+import {
+  AllExceptionsFilter,
+  HttpExceptionFilter,
+} from './core/interceptors/exception-filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,7 +18,11 @@ async function bootstrap() {
     }),
   );
 
-  // app.useGlobalFilters(new HttpExceptionFilter());
+  const httpAdapter = app.get(HttpAdapterHost);
+  app.useGlobalFilters(
+    new AllExceptionsFilter(httpAdapter),
+    new HttpExceptionFilter(),
+  );
 
   app.enableCors();
 

@@ -1,7 +1,7 @@
 import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
 import { UsersService } from 'src/services/users/users.service';
 import { Role } from 'src/lib/helpers';
-import { auth } from 'src/core/decorators/auth.decorator';
+import { auth } from 'src/core/decorators';
 import { Response } from 'express';
 
 @Controller('users')
