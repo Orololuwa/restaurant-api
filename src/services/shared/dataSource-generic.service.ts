@@ -121,8 +121,17 @@ export abstract class DataSourceGenericService<T> {
 
   async bulkInsert(
     payload: QueryDeepPartialEntity<T> | QueryDeepPartialEntity<T>[],
+    options?: { transaction?: EntityManager },
   ): Promise<InsertResult> {
     try {
+      if (options?.transaction)
+        return options.transaction
+          .createQueryBuilder()
+          .insert()
+          .into(this.entity)
+          .values(payload)
+          .execute();
+
       const data = await this.dataSource
         .createQueryBuilder()
         .insert()
