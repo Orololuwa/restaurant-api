@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class EditRestaurantDTO {
   @IsString()
@@ -37,4 +37,8 @@ export class EditRestaurantDTO {
   @IsString()
   @IsUrl(undefined, { message: 'facebook link must be a valid URL' })
   facebook: string;
+
+  @IsOptional()
+  @IsArray()
+  menuCategories: string;
 }

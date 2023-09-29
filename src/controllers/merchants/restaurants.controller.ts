@@ -39,11 +39,15 @@ export class RestaurantController {
   @Get()
   @merchantAuth(Role.Merchant)
   async getRestaurants(@Req() request: Request, @Res() res: Response) {
-    const response = await this.restaurantService.findAll({
-      merchant: request.merchant,
-    });
+    try {
+      const response = await this.restaurantService.findAll({
+        merchant: request.merchant,
+      });
 
-    return res.status(response.status).json(response);
+      return res.status(response.status).json(response);
+    } catch (error) {
+      return res.status(error.status || 500).json(error);
+    }
   }
 
   @Get('/:id')
@@ -53,12 +57,16 @@ export class RestaurantController {
     @Res() res: Response,
     @Param('id') id: number,
   ) {
-    const response = await this.restaurantService.findOneWith({
-      merchant: request?.merchant,
-      id,
-    });
+    try {
+      const response = await this.restaurantService.findOneWith({
+        merchant: request?.merchant,
+        id,
+      });
 
-    return res.status(response.status).json(response);
+      return res.status(response.status).json(response);
+    } catch (error) {
+      return res.status(error.status || 500).json(error);
+    }
   }
 
   @Post('address/:id')
@@ -68,10 +76,14 @@ export class RestaurantController {
     @Res() res: Response,
     @Param('id') id: number,
   ) {
-    const payload: AddRestaurantAddressDTO = { id, address: body };
-    const response = await this.restaurantService.addAddress(payload);
+    try {
+      const payload: AddRestaurantAddressDTO = { id, address: body };
+      const response = await this.restaurantService.addAddress(payload);
 
-    return res.status(response.status).json(response);
+      return res.status(response.status).json(response);
+    } catch (error) {
+      return res.status(error.status || 500).json(error);
+    }
   }
 
   @Patch('address/:id')
@@ -81,10 +93,14 @@ export class RestaurantController {
     @Res() res: Response,
     @Param('id') id: number,
   ) {
-    const payload: AddRestaurantAddressDTO = { id, address: body };
-    const response = await this.restaurantService.editAddress(payload);
+    try {
+      const payload: AddRestaurantAddressDTO = { id, address: body };
+      const response = await this.restaurantService.editAddress(payload);
 
-    return res.status(response.status).json(response);
+      return res.status(response.status).json(response);
+    } catch (error) {
+      return res.status(error.status || 500).json(error);
+    }
   }
 
   @Patch(':id')
@@ -95,12 +111,16 @@ export class RestaurantController {
     @Param('id') id: number,
     @Res() res: Response,
   ) {
-    const response = await this.restaurantService.update(
-      id,
-      body,
-      req.merchant,
-    );
+    try {
+      const response = await this.restaurantService.update(
+        id,
+        body,
+        req.merchant,
+      );
 
-    return res.status(response.status).json(response);
+      return res.status(response.status).json(response);
+    } catch (error) {
+      return res.status(error.status || 500).json(error);
+    }
   }
 }

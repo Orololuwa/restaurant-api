@@ -51,3 +51,7 @@ export const hasAll = <T extends string>(
 export type UniqueId = string;
 
 export const generateUniqueId = (): UniqueId => uuidv4().slice(0, 8);
+
+export const slugify = (text: string) => {
+  return text.trim().split(' ').join('_');
+};

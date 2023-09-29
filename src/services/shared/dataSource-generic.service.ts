@@ -19,7 +19,7 @@ export abstract class DataSourceGenericService<T> {
     protected readonly entity: EntityTarget<T>,
   ) {}
 
-  async create(payload: DeepPartial<T>): Promise<T> {
+  create(payload: DeepPartial<T>): T {
     return this.dataSource.manager.create(this.entity, payload);
   }
 

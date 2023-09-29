@@ -145,6 +145,8 @@ export class RestaurantService {
         relations: { address: true },
       });
 
+      if (!restaurant) throw new NotFoundException('Restaurant not found');
+
       const setupComplete =
         !!restaurant.address &&
         !!restaurant.description &&

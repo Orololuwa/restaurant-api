@@ -49,8 +49,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const res = ctx.getResponse<Response>();
     const req = ctx.getRequest<Request>();
     const status = exception.getStatus();
-
-    console.log({ exception });
+    const response = exception.getResponse();
 
     console.error('@HttpExceptionFilter');
 
@@ -58,7 +57,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: req.url,
-      message: exception?.message || 'Internal Server Error',
+      message:
+        typeof response === 'string'
+          ? response
+          : typeof response === 'object'
+          ? (response as any)?.message
+          : exception?.message || 'Internal Server Error',
     });
   }
 }

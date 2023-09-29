@@ -60,4 +60,7 @@ export class Restaurant {
 
   @OneToMany(() => MenuItem, (menuItems) => menuItems.restaurant)
   menuItems: MenuItem;
+
+  @Column('simple-array', { nullable: true })
+  menuCategories: string;
 }

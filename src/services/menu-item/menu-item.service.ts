@@ -1,16 +1,19 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseState } from 'src/lib/helpers';
 import { DataSource } from 'typeorm';
 import { MenuItem } from '../../frameworks/typeorm/entities/menu-item.entity';
-// import { OptionalQuery } from 'src/core/types';
-// import { RestaurantService } from '../restaurants/restaurants.service';
 import { DataSourceGenericService } from '../shared/dataSource-generic.service';
 import {
+  CreateMenuItemPayload,
+  EditMenuItemDTO,
   IGetAllMenuItemsPayload,
   IMenuItemQuery,
 } from 'src/core/dtos/menu-item';
 import { queryDbByDateFilter } from 'src/lib/utils/db';
 import { ErrorService } from '../error/error.service';
+import { slugify } from 'src/lib/utils';
+import { Restaurant } from 'src/frameworks/typeorm/entities/restaurants.entity';
+import { serializeMenuItem } from 'src/lib/utils/serializers';
 
 @Injectable()
 export class MenuItemService extends DataSourceGenericService<MenuItem> {
@@ -44,7 +47,7 @@ export class MenuItemService extends DataSourceGenericService<MenuItem> {
       const dateQuery = this.cleanDateQuery(query);
       const pageQuery = this.cleanPageQuery(query);
       const data = await this.findAllWithPagination(
-        { where: { ...options, ...dateQuery } },
+        { where: { isDeleted: false, ...options, ...dateQuery } },
         { ...pageQuery },
       );
 
@@ -59,117 +62,101 @@ export class MenuItemService extends DataSourceGenericService<MenuItem> {
     }
   }
 
-  // async createMenuItem(body: CreateMenuItemDTO) {
-  //   try {
-  //     const { restaurantId, ...rest } = body;
+  async getAMenuItem(id: number) {
+    try {
+      const menuItem = await this.findOne({ where: { id, isDeleted: false } });
 
-  //     const restaurant = (
-  //       await this.restaurantService.findOneWith({
-  //         id: +restaurantId,
-  //       })
-  //     ).data;
+      if (!menuItem) throw new NotFoundException('Menu Item not found');
 
-  //     if (!restaurant) throw new NotFoundException('Restaurant not found');
+      return {
+        message: 'Menu Item retrieved successfully',
+        data: menuItem,
+        status: HttpStatus.FOUND,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      await this.errorService.error(error);
+    }
+  }
 
-  //     const created = this.repo.create(rest);
+  async createMenuItem(payload: CreateMenuItemPayload) {
+    try {
+      const { restaurant, body } = payload;
+      const created = this.create({ ...body, restaurant });
 
-  //     created.restaurant = restaurant;
+      let data;
 
-  //     const menuItem = await this.repo.save(created);
+      await this.dataSource.transaction(async (manager) => {
+        if (body.isNewCategory) {
+          const categories = restaurant.menuCategories || [];
 
-  //     return {
-  //       message: `Menu Item (${created.name}) created successfully`,
-  //       data: {
-  //         menuItem,
-  //       },
-  //       status: HttpStatus.CREATED,
-  //       state: ResponseState.SUCCESS,
-  //     };
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+          if (!categories.includes(body.category)) {
+            (categories as string[]).push(body.category);
 
-  // async find(entityOptions: OptionalQuery<MenuItem>) {
-  //   try {
-  //     const data = await this.repo.find({ where: entityOptions });
+            await manager.update(
+              Restaurant,
+              {},
+              { menuCategories: categories as string },
+            );
+          }
+        }
 
-  //     return {
-  //       message: 'Menu Item(s) retrieved successfully',
-  //       data,
-  //       status: HttpStatus.OK,
-  //       state: ResponseState.SUCCESS,
-  //     };
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+        const menuItem = await this.insert(created, { transaction: manager });
 
-  // async findOne(id: number) {
-  //   try {
-  //     const menuItem = await this.repo.findOneBy({ id });
+        const slug = slugify(`${menuItem.name} ${menuItem.id}`);
 
-  //     return {
-  //       message: 'Menu Item retrieved successfully',
-  //       data: {
-  //         menuItem,
-  //       },
-  //       status: HttpStatus.FOUND,
-  //       state: ResponseState.SUCCESS,
-  //     };
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+        await this.update(menuItem.id, { slug }, { transaction: manager });
 
-  // async update(id: number, body: Partial<MenuItem>) {
-  //   try {
-  //     const found = await this.findOne(id);
-  //     const {
-  //       data: { menuItem },
-  //     } = found;
+        data = serializeMenuItem({ ...menuItem, slug });
+      });
 
-  //     if (!menuItem) throw new NotFoundException("Menu Item doesn't exist");
+      return {
+        message: `Menu Item (${created.name}) created successfully`,
+        data,
+        status: HttpStatus.CREATED,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      await this.errorService.error(error);
+    }
+  }
 
-  //     Object.assign(menuItem, body);
+  async editMenuItem(id: number, body: Partial<EditMenuItemDTO>) {
+    try {
+      const menuItem = await this.findOne({ where: { id, isDeleted: false } });
 
-  //     await this.repo.save(menuItem);
+      if (!menuItem) throw new NotFoundException("Menu Item doesn't exist");
 
-  //     return {
-  //       message: 'Menu Item updated successfully',
-  //       data: {
-  //         menuItem,
-  //       },
-  //       status: HttpStatus.ACCEPTED,
-  //       state: ResponseState.SUCCESS,
-  //     };
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+      await this.update(id, { ...body });
 
-  // async delete(id: number) {
-  //   try {
-  //     const found = await this.findOne(id);
+      return {
+        message: 'Menu Item updated successfully',
+        data: {
+          id,
+        },
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      await this.errorService.error(error);
+    }
+  }
 
-  //     const {
-  //       data: { menuItem },
-  //     } = found;
+  async deleteMenuItem(id: number) {
+    try {
+      const menuItem = await this.findOne({ where: { id } });
 
-  //     if (!menuItem) throw new NotFoundException("Menu Item doesn't exist");
+      if (!menuItem) throw new NotFoundException("Menu Item doesn't exist");
 
-  //     await this.repo.remove(menuItem);
+      await this.update(id, { isDeleted: true });
 
-  //     return {
-  //       message: 'Menu Item deleted successfully',
-  //       data: {
-  //         menuItem,
-  //       },
-  //       status: HttpStatus.ACCEPTED,
-  //       state: ResponseState.SUCCESS,
-  //     };
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+      return {
+        message: 'Menu Item deleted successfully',
+        status: HttpStatus.OK,
+        state: ResponseState.SUCCESS,
+      };
+    } catch (error) {
+      await this.errorService.error(error);
+    }
+  }
 }

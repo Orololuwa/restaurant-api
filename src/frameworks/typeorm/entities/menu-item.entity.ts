@@ -1,3 +1,4 @@
+import { MenuItemStatus } from 'src/lib/helpers/menu-items';
 import {
   Column,
   CreateDateColumn,
@@ -41,4 +42,16 @@ export class MenuItem {
 
   @ManyToOne(() => Restaurant, (restaurant) => restaurant.menuItems)
   restaurant: Restaurant;
+
+  @Column({ nullable: true })
+  slug: string;
+
+  @Column()
+  category: string;
+
+  @Column({ default: MenuItemStatus.ACTIVE })
+  status: string;
+
+  @Column({ default: false })
+  isDeleted: boolean;
 }
