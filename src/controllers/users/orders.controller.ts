@@ -10,10 +10,10 @@ import {
   Res,
 } from '@nestjs/common';
 import { Serialize } from 'src/core/interceptors/serialize.inteceptor';
-import { CreateOrderDTO } from '../core/dtos/orders/create-order.dto';
+import { CreateOrderDTO } from 'src/core/dtos/orders/create-order.dto';
 import { OrdersService } from 'src/services/orders/orders.service';
 import { Request, Response } from 'express';
-import { User } from '../frameworks/typeorm/entities/users.entity';
+import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import { auth } from 'src/core/decorators';
 import { Role } from 'src/lib/helpers';
 import { OrderDTO } from 'src/core/dtos/orders/order.dto';
