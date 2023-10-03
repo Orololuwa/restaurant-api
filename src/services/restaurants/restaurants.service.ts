@@ -66,7 +66,7 @@ export class RestaurantService {
       }
 
       const createdAddress = (
-        await this.addressService.createForRestaurant(address)
+        await this.addressService.createRestaurantAdress(address)
       ).data;
 
       await this.dataSource.manager.update(Restaurant, restaurant.id, {

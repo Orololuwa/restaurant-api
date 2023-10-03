@@ -13,12 +13,12 @@ export class AddressController {
   @Post()
   @auth(Role.User)
   createAddress(@Body() body: CreateAddressDTO, @Req() req: Request) {
-    return this.addressService.create(body, req.user as User);
+    return this.addressService.createUserAdress(body, req.user as User);
   }
 
   @Get()
   @auth(Role.User)
   getAddresses(@Req() req: Request) {
-    return this.addressService.find(req.user as User);
+    return this.addressService.getAllUserAdresses(req.user as User);
   }
 }

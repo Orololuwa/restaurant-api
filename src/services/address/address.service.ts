@@ -1,34 +1,31 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { CreateAddressDTO } from 'src/core/dtos/address/create-address.dto';
 import { OptionalQuery } from 'src/core/types';
 import { Address } from 'src/frameworks/typeorm/entities/address.entity';
 import { User } from 'src/frameworks/typeorm/entities/users.entity';
 import { ResponseState } from 'src/lib/helpers';
-import { Repository } from 'typeorm';
+import { DataSource } from 'typeorm';
+import { DataSourceGenericService } from '../shared/dataSource-generic.service';
 
 @Injectable()
-export class AddressService {
-  constructor(
-    @InjectRepository(Address)
-    private repo: Repository<Address>,
-  ) {}
-  async create(body: CreateAddressDTO, user: User) {
+export class AddressService extends DataSourceGenericService<Address> {
+  constructor(dataSource: DataSource) {
+    super(dataSource, Address);
+  }
+  async createUserAdress(body: CreateAddressDTO, user: User) {
     try {
-      const primaryAddress = (
-        await this.findOneWith({ primaryAddress: true, user })
-      ).data;
+      const primaryAddress = await this.findOne({
+        where: { primaryAddress: true, user },
+      });
 
       if (primaryAddress) {
-        primaryAddress.primaryAddress = false;
-
-        await this.repo.save(primaryAddress);
+        await this.update(primaryAddress.id, { primaryAddress: false });
       }
 
-      const newPrimaryAddress = this.repo.create(body);
+      const newPrimaryAddress = this.create(body);
       newPrimaryAddress.user = user;
 
-      const address = await this.repo.save(newPrimaryAddress);
+      const address = await this.insert(newPrimaryAddress);
 
       delete address.user;
 
@@ -43,11 +40,11 @@ export class AddressService {
     }
   }
 
-  async createForRestaurant(body: CreateAddressDTO) {
+  async createRestaurantAdress(body: CreateAddressDTO) {
     try {
-      const createdAddress = this.repo.create(body);
+      const createdAddress = this.create(body);
 
-      const address = await this.repo.save(createdAddress);
+      const address = await this.insert(createdAddress);
 
       return {
         message: 'Address created successfully',
@@ -62,24 +59,23 @@ export class AddressService {
 
   async updatePrimary(id: number, user: User) {
     try {
-      const primaryAddress = (
-        await this.findOneWith({ primaryAddress: true, user })
-      ).data;
+      const primaryAddress = await this.findOne({
+        where: { primaryAddress: true, user },
+      });
 
+      // If there is a previous primary address, find it and update it to false
       if (primaryAddress) {
-        primaryAddress.primaryAddress = false;
-
-        await this.repo.save(primaryAddress);
+        await this.update(primaryAddress.id, { primaryAddress: false });
       }
 
-      const newPrimaryAddress = (await this.findOneWith({ id })).data;
-      newPrimaryAddress.primaryAddress = true;
+      // Now create a new primary address
+      const newPrimaryAddress = await this.findOne({ where: { id } });
 
-      const address = await this.repo.save(newPrimaryAddress);
+      await this.update(primaryAddress.id, { primaryAddress: true });
 
       return {
         message: 'Address created successfully',
-        data: address,
+        data: newPrimaryAddress,
         status: HttpStatus.OK,
         state: ResponseState.SUCCESS,
       };
@@ -88,9 +84,9 @@ export class AddressService {
     }
   }
 
-  async findOneWith(field: OptionalQuery<Address>) {
+  async getAnAddress(field: OptionalQuery<Address>) {
     try {
-      const address = await this.repo.findOne({ where: field });
+      const address = await this.findOne({ where: field });
       return {
         message: 'Address retrieved successfully',
         data: address,
@@ -102,9 +98,12 @@ export class AddressService {
     }
   }
 
-  async find(user: User) {
+  async getAllUserAdresses(user: User) {
     try {
-      const addresses = await this.repo.find({ where: { user } });
+      const addresses = await this.findAllWithPagination(
+        { where: { user: { id: user.id } } },
+        {},
+      );
 
       return {
         message: 'Addresses retrieved successfully',
